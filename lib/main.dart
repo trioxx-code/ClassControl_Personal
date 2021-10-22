@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp();
+  runApp(PreScreen());
 }
 
 class PreScreen extends StatefulWidget {
