@@ -1,3 +1,4 @@
+import 'package:classcontrol_personal/util/SideBarDrawer.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -15,6 +16,7 @@ class _PreScreenState extends State<PreScreen> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        drawer: SideDrawer(),
         appBar: AppBar(
           title: Text("ClassControl Personal DEBUG"),
         ),
