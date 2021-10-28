@@ -18,111 +18,102 @@ class SideDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: Column(
-        children: <Widget>[
-          const DrawerHeader(
-            child: Center(
-              child: Text(
-                //TODO: ClassControl Bild einfügen
-                'ClassControl',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white, fontSize: 25),
+      child: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            DrawerHeader(
+              child: Container(
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(Constants.CLASSCONTROL_SCALED_ICON_PATH),
+                    fit: BoxFit.fill,
+                  ),
+                ),
               ),
             ),
-            decoration: BoxDecoration(
-              color: Colors.black,
+            ListTile(
+              leading: const Icon(Icons.home),
+              title: const Text(Constants.PT_DASHBOARD),
+              onTap: () async {
+                await Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => DashboardPage(),
+                ));
+              },
             ),
-          ),
-          ListTile(
-            leading: const Icon(Icons.home),
-            title: const Text(Constants.PT_DASHBOARD),
-            onTap: () async {
-              await Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) =>
-                    DashboardPage(),
-              ));
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.shopping_cart),
-            title: const Text(Constants.PT_TIMETABLE),
-            onTap: () async {
-              await Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) =>
-                    TimetablePage(),
-              ));
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.border_color),
-            title: const Text(Constants.PT_CALENDAR),
-            onTap: () async {
-              await Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) =>
-                    CalendarPage(),
-              ));
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.exit_to_app),
-            title: const Text(Constants.PT_TASK),
-            onTap: () async {
-              await Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) =>
-                    TaskPage(),
-              ));
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.exit_to_app),
-            title: const Text(Constants.PT_NOTE),
-            onTap: () async {
-              await Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) =>
-                    NotePage(),
-              ));
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.exit_to_app),
-            title: const Text(Constants.PT_LEARNING),
-            onTap: () async {
-              await Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) =>
-                    LearningPage(),
-              ));
-            },
-          ),
-          ListTile(
-              leading: const Icon(Icons.exit_to_app),
+            ListTile(
+              leading: const Icon(Icons.timer),
+              title: const Text(Constants.PT_TIMETABLE),
+              onTap: () async {
+                await Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => TimetablePage(),
+                ));
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.calendar_today),
+              title: const Text(Constants.PT_CALENDAR),
+              onTap: () async {
+                await Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => CalendarPage(),
+                ));
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.flash_on_outlined),
+              title: const Text(Constants.PT_TASK),
+              onTap: () async {
+                await Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => TaskPage(),
+                ));
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.sticky_note_2_rounded),
+              title: const Text(Constants.PT_NOTE),
+              onTap: () async {
+                await Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => NotePage(),
+                ));
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.account_balance),
+              title: const Text(Constants.PT_LEARNING),
+              onTap: () async {
+                await Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => LearningPage(),
+                ));
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.cloud),
               title: const Text(Constants.PT_WEB),
               onTap: () async {
                 await Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) =>
-                      WebPage(),
+                  builder: (context) => WebPage(),
                 ));
               },
-          ),
-          ListTile(
-            leading: const Icon(Icons.exit_to_app),
-            title: const Text(Constants.PT_PERFORMANCE),
-            onTap: () async {
-              await Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) =>
-                    PerformancePage(),
-              ));
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.exit_to_app),
-            title: const Text(Constants.PT_SETTINGS),
-            onTap: () async {
-              await Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) =>
-                    SettingsPage(),
-              ));
-            },),
-        ],
+            ),
+            ListTile(
+              leading: const Icon(Icons.show_chart),
+              title: const Text(Constants.PT_PERFORMANCE),
+              onTap: () async {
+                await Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => PerformancePage(),
+                ));
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text(Constants.PT_SETTINGS),
+              onTap: () async {
+                await Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => SettingsPage(),
+                ));
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

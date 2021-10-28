@@ -2,7 +2,7 @@
     package="de.classcontrol_personal">
    <application
         android:label="classcontrol_personal"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
