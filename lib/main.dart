@@ -1,12 +1,16 @@
+/*
+ * Copyright (c) 2021. ClassControl Personal by trioxx
+ */ // ignore_for_file: file_names
+import 'package:classcontrol_personal/Pages/DashboardPage.dart';
 import 'package:classcontrol_personal/util/Constants.dart';
-import 'package:classcontrol_personal/util/SideBarDrawer.dart';
+import 'package:classcontrol_personal/util/SharedPreferencesHelper.dart';
 import 'package:flutter/material.dart';
 
 void main() {
   runApp(const PreScreen());
 }
 
-Future init() async{
+Future init() async {
   //TODO: Prüfen ob das erste Mal gestartet wird
 }
 
@@ -18,6 +22,8 @@ class PreScreen extends StatefulWidget {
 }
 
 class _PreScreenState extends State<PreScreen> {
+  String _themeMode = "";
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -26,28 +32,23 @@ class _PreScreenState extends State<PreScreen> {
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.blueGrey,
         ),
-        brightness: Brightness.dark,
+        brightness: /*(_themeMode == Constants.CCP_THEME_LIGHT)? Brightness.light :*/ Brightness
+            .dark,
       ),
-      home: Scaffold(
-        drawer: SideDrawer(),
-        appBar: AppBar(
-          title: Text("ClassControl Personal DEBUG"),
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage(Constants.CLASSCONTROL_ICON_PATH),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+      home: DashboardPage(),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    //getThemeData();
+  }
+
+  Future getThemeData() async {
+    var val =
+        await SharedPreferencesHelper.readDataString(Constants.CCP_THEME_MODE);
+    _themeMode = val ?? "";
+    print(_themeMode);
   }
 }

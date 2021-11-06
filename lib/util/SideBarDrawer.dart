@@ -1,5 +1,6 @@
-// ignore_for_file: file_names
-
+/*
+ * Copyright (c) 2021. ClassControl Personal by trioxx
+ */ // ignore_for_file: file_names
 import 'package:classcontrol_personal/Pages/CalendarPage.dart';
 import 'package:classcontrol_personal/Pages/DashboardPage.dart';
 import 'package:classcontrol_personal/Pages/LearningPage.dart';
@@ -35,7 +36,7 @@ class SideDrawer extends StatelessWidget {
               leading: const Icon(Icons.home),
               title: const Text(Constants.PT_DASHBOARD),
               onTap: () async {
-                await Navigator.of(context).push(MaterialPageRoute(
+                await Navigator.of(context).pushReplacement(MaterialPageRoute(
                   builder: (context) => DashboardPage(),
                 ));
               },
@@ -44,7 +45,7 @@ class SideDrawer extends StatelessWidget {
               leading: const Icon(Icons.timer),
               title: const Text(Constants.PT_TIMETABLE),
               onTap: () async {
-                await Navigator.of(context).push(MaterialPageRoute(
+                await Navigator.of(context).pushReplacement(MaterialPageRoute(
                   builder: (context) => TimetablePage(),
                 ));
               },
@@ -53,7 +54,7 @@ class SideDrawer extends StatelessWidget {
               leading: const Icon(Icons.calendar_today),
               title: const Text(Constants.PT_CALENDAR),
               onTap: () async {
-                await Navigator.of(context).push(MaterialPageRoute(
+                await Navigator.of(context).pushReplacement(MaterialPageRoute(
                   builder: (context) => CalendarPage(),
                 ));
               },
@@ -62,7 +63,7 @@ class SideDrawer extends StatelessWidget {
               leading: const Icon(Icons.flash_on_outlined),
               title: const Text(Constants.PT_TASK),
               onTap: () async {
-                await Navigator.of(context).push(MaterialPageRoute(
+                await Navigator.of(context).pushReplacement(MaterialPageRoute(
                   builder: (context) => TaskPage(),
                 ));
               },
@@ -71,7 +72,7 @@ class SideDrawer extends StatelessWidget {
               leading: const Icon(Icons.sticky_note_2_rounded),
               title: const Text(Constants.PT_NOTE),
               onTap: () async {
-                await Navigator.of(context).push(MaterialPageRoute(
+                await Navigator.of(context).pushReplacement(MaterialPageRoute(
                   builder: (context) => NotePage(),
                 ));
               },
@@ -80,7 +81,7 @@ class SideDrawer extends StatelessWidget {
               leading: const Icon(Icons.account_balance),
               title: const Text(Constants.PT_LEARNING),
               onTap: () async {
-                await Navigator.of(context).push(MaterialPageRoute(
+                await Navigator.of(context).pushReplacement(MaterialPageRoute(
                   builder: (context) => LearningPage(),
                 ));
               },
@@ -89,7 +90,7 @@ class SideDrawer extends StatelessWidget {
               leading: const Icon(Icons.cloud),
               title: const Text(Constants.PT_WEB),
               onTap: () async {
-                await Navigator.of(context).push(MaterialPageRoute(
+                await Navigator.of(context).pushReplacement(MaterialPageRoute(
                   builder: (context) => WebPage(),
                 ));
               },
@@ -98,7 +99,7 @@ class SideDrawer extends StatelessWidget {
               leading: const Icon(Icons.show_chart),
               title: const Text(Constants.PT_PERFORMANCE),
               onTap: () async {
-                await Navigator.of(context).push(MaterialPageRoute(
+                await Navigator.of(context).pushReplacement(MaterialPageRoute(
                   builder: (context) => PerformancePage(),
                 ));
               },
@@ -107,7 +108,7 @@ class SideDrawer extends StatelessWidget {
               leading: const Icon(Icons.settings),
               title: const Text(Constants.PT_SETTINGS),
               onTap: () async {
-                await Navigator.of(context).push(MaterialPageRoute(
+                await Navigator.of(context).pushReplacement(MaterialPageRoute(
                   builder: (context) => SettingsPage(),
                 ));
               },
