@@ -5,13 +5,26 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:classcontrol_personal/Models/CalendarModel.dart';
+import 'package:classcontrol_personal/Models/CompartmentModel.dart';
+import 'package:classcontrol_personal/Models/LearningItemModel.dart';
+import 'package:classcontrol_personal/Models/LearningStackModel.dart';
+import 'package:classcontrol_personal/Models/NoteModel.dart';
+import 'package:classcontrol_personal/Models/PerformanceModel.dart';
+import 'package:classcontrol_personal/Models/TaskModel.dart';
+import 'package:classcontrol_personal/Models/TeacherModel.dart';
+import 'package:classcontrol_personal/Models/TimetableModel.dart';
 import 'package:classcontrol_personal/util/Constants.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
-  //TODO 23.10.21
+  final _tableCompartment = "Compartment";
+  static final compartmentId = "CompartmentId";
+  static final compartmentTitle = "Compartment";
+  static final compartmentTeacher = "Teacher";
+
   final _tableNote = "Note";
   static final noteId = "NoteId";
   static final noteTitle = "Title";
@@ -20,19 +33,40 @@ class DatabaseHelper {
   static final noteDate = "Date";
   static final noteCompartment = "CompartmentId";
 
-
-  //TODO:
   final _tablePerformance = "Performance";
-  final _tableTask = "Task";
-  final _tableLearningStack = "LearningStack";
-  final _tableLearningItem = "LearningItem";
-  final _tableCalendar = "Calendar";
-  final _tableCompartment = "Compartment";
+  static final performanceId = "PerformanceId";
+  static final performanceTitle = "Title";
+  static final performanceCompartment = "CompartmentId";
+  static final performanceMark = "Mark";
 
+  final _tableLearningStack = "LearningStack";
+  static final learningStackId = "LearningStackId";
+  static final learningStackTitle = "LearningStackTitle";
+
+  final _tableLearningItem = "LearningItem";
+  static final learningItemId = "LearningItemId";
+  static final learningItemContent = "Content";
+  static final learningItemStackId = "LearningStackId";
+
+  final _tableCalendar = "Calendar";
+  static final calendarId = "CalendarId";
+  static final calendarTitle = "Title";
+  static final calendarDate = "Date";
+  static final calendarMarkColor = "ColorMark";
+  static final calendarIsChecked = "Checked";
+  static final calendarDesc = "Desc";
+
+  final _tableTask = "Task";
+  static final taskId = "TaskId";
+  static final taskTitle = "Title";
+  static final taskDesc = "Desc";
+  static final taskDateTime = "TimeDate";
+  static final taskPriority = "Priority";
+  static final taskCompartment = "CompartmentId";
 
   final _tableTimetable = "Timetable";
   static final timetableId = "TimetableId";
-  static final timetableTitle = "Titel";
+  static final timetableTitle = "Title";
   static final timetableWeekday = "Weekday";
   static final timetableTime = "time";
 
@@ -51,15 +85,16 @@ class DatabaseHelper {
     return _database!;
   }
 
+  //TODO: SQL-Vervollständigen
   List<String> _createTables() {
     return [
       "${Constants.SQL_CREATE} $_tableTeacher ($teacherId ${Constants.SQL_PS}, $teacherName ${Constants.SQL_TEXT})",
-      "${Constants.SQL_CREATE} $_tableCalendar",
-      "${Constants.SQL_CREATE} $_tableLearningItem",
-      "${Constants.SQL_CREATE} $_tableLearningStack",
-      "${Constants.SQL_CREATE} $_tableNote",
-      "${Constants.SQL_CREATE} $_tablePerformance",
-      "${Constants.SQL_CREATE} $_tableTask",
+      "${Constants.SQL_CREATE} $_tableCalendar ()",
+      "${Constants.SQL_CREATE} $_tableLearningItem ()",
+      "${Constants.SQL_CREATE} $_tableLearningStack ()",
+      "${Constants.SQL_CREATE} $_tableNote ($noteId ${Constants.SQL_PS}, $noteTitle ${Constants.SQL_TEXT}, $noteNote TEXT, $notePriority INTEGER NOT NULL, $noteDate INTEGER NOT NULL, $noteCompartment INTEGER NOT NULL, FOREIGN KEY )",
+      "${Constants.SQL_CREATE} $_tablePerformance )",
+      "${Constants.SQL_CREATE} $_tableTask ()",
       "${Constants.SQL_CREATE} $_tableTimetable ($timetableId ${Constants.SQL_PS}, $timetableTitle ${Constants.SQL_TEXT}, $timetableWeekday ${Constants.SQL_TEXT}, $timetableTime ${Constants.SQL_TEXT});",
       "${Constants.SQL_CREATE} $_tableCompartment ()",
     ];
@@ -83,5 +118,151 @@ class DatabaseHelper {
   Future close() async {
     final d = await db.database;
     d.close();
+  }
+
+  Future<List<NoteModel>> getAllNotes() async {
+    final d = await db.database;
+    List<NoteModel> notes = [];
+    List<Map> data = await d.rawQuery("SELECT * FROM $_tableNote");
+    data.forEach((element) {
+      notes.add(NoteModel(
+        id: element[noteId],
+        priority: element[notePriority],
+        date: element[noteDate],
+        note: element[noteNote],
+        title: element[noteTitle],
+        compartmentModel: element[noteCompartment],
+      ));
+    });
+    return notes;
+  }
+
+  Future<List<TimetableModel>> getAllTimetableData() async {
+    final d = await db.database;
+    List<TimetableModel> tt = [];
+    List<Map> data = await d.rawQuery("SELECT * FROM $_tableTimetable");
+    data.forEach((element) {
+      tt.add(TimetableModel(
+        title: element[timetableTitle],
+        weekday: element[timetableWeekday],
+        time: element[timetableTime],
+        id: element[timetableId],
+      ));
+    });
+    return tt;
+  }
+
+  Future<List<TeacherModel>> getAllTeachers() async {
+    final d = await db.database;
+    List<TeacherModel> teachers = [];
+    List<Map> data = await d.rawQuery("SELECT * FROM $_tableTeacher");
+    data.forEach((element) {
+      teachers.add(
+          TeacherModel(id: element[teacherId], name: element[teacherName]));
+    });
+    return teachers;
+  }
+
+  Future<List<CompartmentModel>> getAllCompartments() async {
+    final d = await db.database;
+    List<CompartmentModel> compartments = [];
+    List<Map> data = await d.rawQuery("SELECT * FROM $_tableCompartment");
+    data.forEach((element) {
+      compartments.add(CompartmentModel(
+        compartmentId: element[compartmentId],
+        compartmentTitle: element[compartmentTitle],
+        teacherModel: element[compartmentTeacher],
+      ));
+    });
+    return compartments;
+  }
+
+  Future<List<CalendarModel>> getAllAppointments() async {
+    final d = await db.database;
+    List<CalendarModel> appointments = [];
+    List<Map> data = await d.rawQuery("SELECT * FROM $_tableCalendar");
+    data.forEach((element) {
+      appointments.add(CalendarModel(
+        id: element[calendarId],
+        title: element[calendarTitle],
+        desc: element[calendarDesc],
+        markColor: element[calendarMarkColor],
+        datetime: element[calendarDate],
+        checked: element[calendarIsChecked],
+      ));
+    });
+    return appointments;
+  }
+
+  //TODO: SQL-Vervollständigen
+  Future<List<TaskModel>> getAllTasks() async {
+    final d = await db.database;
+    List<TaskModel> tasks = [];
+    List<Map> data = await d.rawQuery("SELECT * FROM $_tableTask");
+    data.forEach((element) {
+      tasks.add(TaskModel(
+        taskId: element[taskId],
+        taskTitle: element[taskTitle],
+        taskDesc: element[taskDesc],
+        taskDateTime: element[taskDateTime],
+        taskCompartment: CompartmentModel(
+          compartmentId: element[compartmentId],
+          teacherModel:
+              TeacherModel(id: element[teacherId], name: element[teacherName]),
+          compartmentTitle: element[compartmentTitle],
+        ),
+        taskPriority: element[taskPriority],
+      ));
+    });
+    return tasks;
+  }
+
+  //TODO: SQL-Vervollständigen
+  Future<List<PerformanceModel>> getAllPerformances() async {
+    final d = await db.database;
+    List<PerformanceModel> perfomances = [];
+    List<Map> data = await d.rawQuery("SELECT * FROM $_tablePerformance");
+    data.forEach((element) {
+      perfomances.add(PerformanceModel(
+        id: element[performanceId],
+        title: performanceTitle,
+        compartment: CompartmentModel(
+            compartmentId: element[compartmentId],
+            compartmentTitle: element[compartmentTitle],
+            teacherModel: TeacherModel(
+                id: element[teacherId], name: element[teacherName])),
+        mark: element[performanceMark],
+      ));
+    });
+    return perfomances;
+  }
+
+  //TODO: SQL-Vervollstädigen
+  Future<List<LearningStackModel>> getAllLearningStacks() async {
+    final d = await db.database;
+    List<LearningStackModel> stacks = [];
+    List<Map> data = await d.rawQuery("SELECT * FROM $_tableLearningStack");
+    data.forEach((element) {
+      stacks.add(LearningStackModel(
+          id: element[learningStackId], title: element[learningStackTitle]));
+    });
+    return stacks;
+  }
+
+  //TODO: SQL-Vervollständigen
+  Future<List<LearningItemModel>> getAllLearningItemsByStack(
+      LearningStackModel stack) async {
+    final d = await db.database;
+    List<LearningItemModel> items = [];
+    List<Map> data = await d.rawQuery(
+        "SELECT * FROM $_tableLearningItem WHERE $_tableLearningItem.$learningItemStackId = ${stack.id}");
+    data.forEach((element) {
+      items.add(LearningItemModel(
+        id: element[learningItemId],
+        content: element[learningItemContent],
+        stackId: stack.id!,
+      ));
+    });
+    return items;
   }
 }
