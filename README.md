@@ -1,16 +1,20 @@
 # classcontrol_personal
 
-A new Flutter application.
+A Flutter application.
+ClassControl is first deveolped in Java and Android Native at 2020.
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+## Personal
+This project is the PERSONAL version of the ClassControl project.
+The PERSONAL version is offline hosted.
 
-A few resources to get you started if this is your first Flutter project:
+The PERSONAL version features the modules:
+- Notes
+- Tasks
+- Learning
+- Performance
+- Calendar
+- Teacher
+- Timetable
+- Compartment
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.

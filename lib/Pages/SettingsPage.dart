@@ -1,6 +1,9 @@
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+
 /*
  * Copyright (c) 2021. ClassControl Personal by trioxx
  */ // ignore_for_file: file_names
+import 'package:classcontrol_personal/Pages/TeacherPage.dart';
 import 'package:classcontrol_personal/util/Constants.dart';
 import 'package:classcontrol_personal/util/SharedPreferencesHelper.dart';
 import 'package:classcontrol_personal/util/SideBarDrawer.dart';
@@ -54,6 +57,23 @@ class _SettingsPageState extends State<SettingsPage> {
         child: PrefPage(
           children: [
             Text("TODO"),
+            TextButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Colors.grey),
+              ),
+              child: const Text(
+                Constants.PT_TEACHER,
+                style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                    backgroundColor: Colors.grey),
+              ),
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => TeacherPage(),
+                ));
+              },
+            ),
             //buildThemePref(), //TODO
           ],
         ),

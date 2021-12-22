@@ -20,6 +20,8 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
+
+  //TODO: Fächer haben immer mehrere Noten. Zuordnung benötigt. Map?
   final _tableCompartment = "Compartment";
   static final compartmentId = "CompartmentId";
   static final compartmentTitle = "Compartment";
@@ -63,6 +65,7 @@ class DatabaseHelper {
   static final taskDateTime = "TimeDate";
   static final taskPriority = "Priority";
   static final taskCompartment = "CompartmentId";
+  static final taskIsChecked = "Checked";
 
   final _tableTimetable = "Timetable";
   static final timetableId = "TimetableId";
@@ -88,15 +91,15 @@ class DatabaseHelper {
   //TODO: SQL-Vervollständigen
   List<String> _createTables() {
     return [
-      "${Constants.SQL_CREATE} $_tableTeacher ($teacherId ${Constants.SQL_PS}, $teacherName ${Constants.SQL_TEXT})",
-      "${Constants.SQL_CREATE} $_tableCalendar ()",
-      "${Constants.SQL_CREATE} $_tableLearningItem ()",
-      "${Constants.SQL_CREATE} $_tableLearningStack ()",
-      "${Constants.SQL_CREATE} $_tableNote ($noteId ${Constants.SQL_PS}, $noteTitle ${Constants.SQL_TEXT}, $noteNote TEXT, $notePriority INTEGER NOT NULL, $noteDate INTEGER NOT NULL, $noteCompartment INTEGER NOT NULL, FOREIGN KEY )",
-      "${Constants.SQL_CREATE} $_tablePerformance )",
-      "${Constants.SQL_CREATE} $_tableTask ()",
+      "${Constants.SQL_CREATE} $_tableTeacher ($teacherId ${Constants.SQL_PS}, $teacherName ${Constants.SQL_TEXT});",
+      "${Constants.SQL_CREATE} $_tableCalendar ($calendarId ${Constants.SQL_PS}, $calendarTitle ${Constants.SQL_TEXT}, $calendarDesc TEXT, $calendarDate INTEGER NOT NULL, $calendarMarkColor INTEGER, $calendarIsChecked INTEGER);",
+      "${Constants.SQL_CREATE} $_tableLearningItem ($learningItemId ${Constants.SQL_PS}, $learningItemContent ${Constants.SQL_TEXT}, $learningItemStackId INTEGER NOT NULL, FOREIGN KEY($learningItemStackId) REFERENCES $_tableLearningStack.$learningStackId);",
+      "${Constants.SQL_CREATE} $_tableLearningStack ($learningStackId ${Constants.SQL_PS}, $learningStackTitle ${Constants.SQL_TEXT});",
+      "${Constants.SQL_CREATE} $_tableNote ($noteId ${Constants.SQL_PS}, $noteTitle ${Constants.SQL_TEXT}, $noteNote TEXT, $notePriority INTEGER NOT NULL, $noteDate INTEGER NOT NULL, $noteCompartment INTEGER NOT NULL, FOREIGN KEY($noteCompartment) REFERENCES $_tableCompartment.$compartmentId);",
+      //TODO: "${Constants.SQL_CREATE} $_tablePerformance ($performanceId ${Constants.SQL_PS}, $performanceTitle ${Constants.SQL_TEXT}, $performanceMark);",
+      "${Constants.SQL_CREATE} $_tableTask ($taskId ${Constants.SQL_PS}, $taskTitle ${Constants.SQL_TEXT}, $taskDesc ${Constants.SQL_TEXT}, $taskPriority INTEGER NOT NULL, $taskDateTime INTEGER NOT NULL, $taskCompartment INTEGER NOT NULL, $taskIsChecked INTEGER NOT NULL, FOREIGN KEY($taskCompartment) REFERENCES $_tableCompartment.$compartmentId);",
       "${Constants.SQL_CREATE} $_tableTimetable ($timetableId ${Constants.SQL_PS}, $timetableTitle ${Constants.SQL_TEXT}, $timetableWeekday ${Constants.SQL_TEXT}, $timetableTime ${Constants.SQL_TEXT});",
-      "${Constants.SQL_CREATE} $_tableCompartment ()",
+      "${Constants.SQL_CREATE} $_tableCompartment ($compartmentId ${Constants.SQL_PS}, $compartmentTitle ${Constants.SQL_TEXT}, $compartmentTeacher INTEGER NOT NULL, FOREIGN KEY($compartmentTeacher) REFERENCES $_tableTeacher.$teacherId);",
     ];
   }
 
@@ -109,8 +112,10 @@ class DatabaseHelper {
 
   Future _onCreate(Database db, int version) async {
     List tables = _createTables();
+    print("TABLES:");
     tables.forEach((element) async {
-      await db.execute(element);
+      print(element.toString());
+      //await db.execute(element);
     });
     return;
   }
@@ -163,6 +168,16 @@ class DatabaseHelper {
     return teachers;
   }
 
+  Future<int> insertTeacher(String teacherName) async {
+    final d = await db.database;
+    int res = 0;
+    //TODO: Eintrag hinzufügen.
+    return res;
+  }
+
+
+
+
   Future<List<CompartmentModel>> getAllCompartments() async {
     final d = await db.database;
     List<CompartmentModel> compartments = [];
@@ -205,6 +220,7 @@ class DatabaseHelper {
         taskTitle: element[taskTitle],
         taskDesc: element[taskDesc],
         taskDateTime: element[taskDateTime],
+        isChecked: element[taskIsChecked],
         taskCompartment: CompartmentModel(
           compartmentId: element[compartmentId],
           teacherModel:

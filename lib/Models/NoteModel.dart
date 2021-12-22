@@ -9,7 +9,7 @@ class NoteModel {
   final int? id;
   final String title;
   final String note;
-  final String date;
+  final int date;
   final int priority;
   final CompartmentModel? compartmentModel;
 
@@ -25,7 +25,7 @@ class NoteModel {
           {int? id,
           String? title,
           String? note,
-          String? date,
+          int? date,
           int? priority,
           CompartmentModel? compartmentModel}) =>
       NoteModel(
@@ -41,7 +41,7 @@ class NoteModel {
         id: data[DatabaseHelper.noteId] as int?,
         title: data[DatabaseHelper.noteTitle] as String,
         note: data[DatabaseHelper.noteNote] as String,
-        date: data[DatabaseHelper.noteDate] as String,
+        date: data[DatabaseHelper.noteDate] as int,
         priority: data[DatabaseHelper.notePriority] as int,
         compartmentModel:
             data[DatabaseHelper.noteCompartment] as CompartmentModel,

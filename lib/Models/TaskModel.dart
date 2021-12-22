@@ -11,6 +11,7 @@ class TaskModel {
   final String taskDesc;
   final int taskDateTime;
   final int taskPriority;
+  final bool isChecked;
   final CompartmentModel taskCompartment;
 
   TaskModel(
@@ -19,6 +20,7 @@ class TaskModel {
       required this.taskDesc,
       required this.taskDateTime,
       required this.taskPriority,
+      required this.isChecked,
       required this.taskCompartment});
 
   TaskModel copy(
@@ -27,6 +29,7 @@ class TaskModel {
           String? taskDesc,
           int? taskDateTime,
           int? taskPriority,
+          bool? isChecked,
           CompartmentModel? taskCompartment}) =>
       TaskModel(
           taskId: taskId ?? this.taskId,
@@ -34,6 +37,7 @@ class TaskModel {
           taskDesc: taskDesc ?? this.taskDesc,
           taskDateTime: taskDateTime ?? this.taskDateTime,
           taskPriority: taskPriority ?? this.taskPriority,
+          isChecked: isChecked ?? this.isChecked,
           taskCompartment: taskCompartment ?? this.taskCompartment);
 
   static TaskModel fromMap(Map<String, Object?> data) => TaskModel(
@@ -42,6 +46,7 @@ class TaskModel {
       taskDesc: data[DatabaseHelper.taskDesc] as String,
       taskDateTime: data[DatabaseHelper.taskDateTime] as int,
       taskPriority: data[DatabaseHelper.taskPriority] as int,
+      isChecked: data[DatabaseHelper.taskIsChecked] as bool,
       taskCompartment:
           data[DatabaseHelper.taskCompartment] as CompartmentModel);
 
@@ -51,6 +56,7 @@ class TaskModel {
         DatabaseHelper.taskDesc: taskDesc,
         DatabaseHelper.taskDateTime: taskDateTime,
         DatabaseHelper.taskPriority: taskPriority,
+        DatabaseHelper.taskIsChecked: isChecked,
         DatabaseHelper.taskCompartment: taskCompartment
       };
 }
