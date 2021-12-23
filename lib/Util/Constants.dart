@@ -32,6 +32,10 @@ class Constants {
   static const PT_NOTE = "Notizen";
   static const PT_TEACHER = "Lehrer";
 
+  //@info: Screens
+  static const SCREEN_ADD = "Hinzufügen";
+  static const SCREEN_EDIT = "Bearbeiten";
+
   //@info: SQL Boilerplate
   static const SQL_CREATE = "CREATE TABLE";
   static const SQL_PS = "INTEGER PRIMARY KEY NOT NULL";

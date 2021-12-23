@@ -34,13 +34,11 @@ class _TeacherPageState extends State<TeacherPage> {
     setState(() {
       isLoading = true;
     });
-    //teachers = await DatabaseHelper.db.getAllTeachers(); //TODO
+    teachers = await DatabaseHelper.db.getAllTeachers();
     setState(() {
       isLoading = false;
     });
   }
-
-  //TODO: PopUp wo ein Lehrer hinzugefügt wird
 
   @override
   Widget build(BuildContext context) {
@@ -58,12 +56,11 @@ class _TeacherPageState extends State<TeacherPage> {
           SizedBox(
             width: 200,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
               child: TextField(
                   controller: _teacher,
-                  style: const TextStyle(
-                    fontSize: 13
-                  ),
+                  style: const TextStyle(fontSize: 13),
                   decoration: InputDecoration(
                     labelText: Constants.PT_TEACHER,
                     labelStyle:
@@ -113,6 +110,7 @@ class _TeacherPageState extends State<TeacherPage> {
 
   Future _editTeacher(int index) async {
     //TODO: Teacher item updaten
+    await DatabaseHelper.db.updateTeacher(teachers[index]);
     await refresh();
   }
 

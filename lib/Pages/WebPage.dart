@@ -11,16 +11,40 @@ class WebPage extends StatefulWidget {
 }
 
 class _WebPageState extends State<WebPage> {
+
+  @override
+  void initState() {
+    super.initState();
+    //TODO: SharedPreferences verwenden um URL zu bekommen
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: SideDrawer(),
       appBar: AppBar(
-        title: Text(Constants.PT_WEB),
+        title: const Text(Constants.PT_WEB),
+        actions: [
+          TextButton(
+            child: const Text("URL"),
+            onPressed: () {
+              //TODO: Popup für URL
+            },
+          )
+        ],
       ),
       body: Container(
 
       ),
     );
   }
+
+  void storeUrl(String url) {
+
+  }
+
+  String? getUrl() {
+    return "";
+  }
+
 }

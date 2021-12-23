@@ -142,6 +142,18 @@ class DatabaseHelper {
     return notes;
   }
 
+  Future<int> deleteNote(NoteModel note) async {
+    final d = await db.database;
+    return await d.delete(_tableNote); //TODO
+  }
+
+  Future<int> editNote(NoteModel note) async {
+    final d = await db.database;
+    return await d.update(_tableNote, {
+      //TODO
+    });
+  }
+
   Future<List<TimetableModel>> getAllTimetableData() async {
     final d = await db.database;
     List<TimetableModel> tt = [];
@@ -168,15 +180,27 @@ class DatabaseHelper {
     return teachers;
   }
 
-  Future<int> insertTeacher(String teacherName) async {
+  Future<int> insertTeacher(String name) async {
     final d = await db.database;
     int res = 0;
     //TODO: Eintrag hinzufügen.
+    int debug = await d.insert(_tableTeacher, {
+      teacherName: name
+    });
+    print("insertTeacher"+debug.toString());
     return res;
   }
 
-
-
+  Future<int> updateTeacher(TeacherModel teacher) async {
+    final d = await db.database;
+    return await d.update(_tableTeacher, {
+      teacherName: teacher.name
+    });
+  }
+  Future<int> deleteTeacher(TeacherModel teacher) async {
+    final d = await db.database;
+    return await d.delete(_tableTeacher, where: "$teacherId =: ?", whereArgs: [teacher.id]);
+  }
 
   Future<List<CompartmentModel>> getAllCompartments() async {
     final d = await db.database;
