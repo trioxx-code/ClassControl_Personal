@@ -5,10 +5,10 @@ import 'package:classcontrol_personal/Database/DatabaseHelper.dart';
 import 'package:classcontrol_personal/Models/NoteModel.dart';
 import 'package:classcontrol_personal/Screens/NoteAddEditScreen.dart';
 import 'package:classcontrol_personal/Screens/NoteDetailScreen.dart';
-import 'package:classcontrol_personal/util/Constants.dart';
+import 'package:classcontrol_personal/Util/Constants.dart';
+import 'package:classcontrol_personal/Util/Misc.dart';
 import 'package:classcontrol_personal/util/SideBarDrawer.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class NotePage extends StatefulWidget {
   @override
@@ -30,17 +30,41 @@ class _NotePageState extends State<NotePage> {
     setState(() {});
     //notes = await DatabaseHelper.db.getAllNotes();
     notes.add(NoteModel(
-        title: "Test1", date: 1640275188, note: "aoidawiod", priority: 5, id: 1));
+        title: "Test1",
+        date: Misc.getCurrentEpochMilli()+3600*1,
+        note: "aoidawiod",
+        priority: 5,
+        id: 1));
     notes.add(NoteModel(
-        title: "Test2", date: 1640275188, note: "aoidawiod", priority: 5, id: 1));
+        title: "Test2",
+        date: Misc.getCurrentEpochMilli()+3600*2,
+        note: "aoidawiod",
+        priority: 5,
+        id: 1));
     notes.add(NoteModel(
-        title: "Test3", date: 1640275188, note: "aoidawiod", priority: 5, id: 1));
+        title: "Test3",
+        date: Misc.getCurrentEpochMilli()+3600*3,
+        note: "aoidawiod",
+        priority: 5,
+        id: 1));
     notes.add(NoteModel(
-        title: "Test4", date: 1640275188, note: "aoidawiod", priority: 5, id: 1));
+        title: "Test4",
+        date: Misc.getCurrentEpochMilli()+3600*4,
+        note: "aoidawiod",
+        priority: 5,
+        id: 1));
     notes.add(NoteModel(
-        title: "Test5", date: 1640275188, note: "aoidawiod", priority: 5, id: 1));
+        title: "Test5",
+        date: Misc.getCurrentEpochMilli()+3600*5,
+        note: "aoidawiod",
+        priority: 5,
+        id: 1));
     notes.add(NoteModel(
-        title: "Test6", date: 1640275188, note: "kaqwdnawoidwa", priority: 5, id: 1));
+        title: "Test6",
+        date: Misc.getCurrentEpochMilli()+3600*6,
+        note: "kaqwdnawoidwa",
+        priority: 5,
+        id: 1));
     setState(() {});
   }
 
@@ -70,25 +94,21 @@ class _NotePageState extends State<NotePage> {
               notes[index].title,
               textAlign: TextAlign.center,
             ),
-            subtitle: Column(
+            subtitle: Row(
               children: [
-                Row(
-                  children: [
-                    Text(
-                      parseEpochToString(notes[index].date),
-                      textAlign: TextAlign.start,
-                    ),
-                    const SizedBox(
-                      width: 30,
-                    ),
-                    Text(
-                      notes[index].priority.toString(),
-                      textAlign: TextAlign.end,
-                    )
-                  ],
+                const SizedBox(
+                  width: 200,
                 ),
-                Wrap(
-                  children: [Text(notes[index].note)],
+                Text(
+                  Misc.convertEpochToString(notes[index].date),
+                  textAlign: TextAlign.start,
+                ),
+                const SizedBox(
+                  width: 200,
+                ),
+                Text(
+                  "Priorität: " + notes[index].priority.toString(),
+                  textAlign: TextAlign.end,
                 )
               ],
             ),
@@ -113,21 +133,7 @@ class _NotePageState extends State<NotePage> {
     );
   }
 
-  //TODO-FUTURE: Parsing in anderen thread machen
-  String parseEpochToString(int epoch) {
-    String res = "";
-    DateTime dt = DateTime.fromMillisecondsSinceEpoch(epoch * 1000);
-    res = dt.day.toString() +
-        "." +
-        dt.month.toString() +
-        "." +
-        dt.year.toString() +
-        "   " +
-        dt.hour.toString() +
-        ":" +
-        dt.minute.toString();
-    return res;
-  }
+  //TODO-FUTURE: Datum+Uhrzeit, Parsing in anderen thread machen
 
   Future _deleteNote(NoteModel model) async {
     await DatabaseHelper.db.deleteNote(model);
@@ -143,3 +149,31 @@ class _NotePageState extends State<NotePage> {
     refresh();
   }
 }
+
+/*
+
+subtitle: Column(
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      parseEpochToString(notes[index].date),
+                      textAlign: TextAlign.start,
+                    ),
+                    const SizedBox(
+                      width: 30,
+                    ),
+                    Text(
+                      notes[index].priority.toString(),
+                      textAlign: TextAlign.end,
+                    )
+                  ],
+                ),
+                /*Wrap( //@cleanup
+                  children: [Text(notes[index].note)],
+                )*/
+              ],
+            ),
+
+
+*/

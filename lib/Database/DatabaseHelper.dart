@@ -142,15 +142,31 @@ class DatabaseHelper {
     return notes;
   }
 
+  Future<int> insertNote(NoteModel note) async {
+    final d = await db.database;
+    return await d.insert(_tableNote, {
+      noteTitle: note.title,
+      noteCompartment: note.compartmentModel,
+      noteDate: note.date,
+      notePriority: note.priority,
+      noteNote: note.note
+    });
+  }
+
   Future<int> deleteNote(NoteModel note) async {
     final d = await db.database;
     return await d.delete(_tableNote); //TODO
   }
 
-  Future<int> editNote(NoteModel note) async {
+  Future<int> updateNote(NoteModel note) async {
     final d = await db.database;
     return await d.update(_tableNote, {
-      //TODO
+      noteId: note.id,
+      noteTitle: note.title,
+      noteCompartment: note.compartmentModel,
+      noteDate: note.date,
+      notePriority: note.priority,
+      noteNote: note.note
     });
   }
 
