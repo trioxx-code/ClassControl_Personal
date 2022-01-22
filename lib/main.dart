@@ -35,7 +35,7 @@ class _PreScreenState extends State<PreScreen> {
         brightness: /*(_themeMode == Constants.CCP_THEME_LIGHT)? Brightness.light :*/ Brightness
             .dark,
       ),
-      home: DashboardPage(),
+      home: const DashboardPage(),
     );
   }
 

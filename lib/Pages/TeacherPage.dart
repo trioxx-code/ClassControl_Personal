@@ -3,11 +3,14 @@
  */ // ignore_for_file: file_names
 import 'package:classcontrol_personal/Database/DatabaseHelper.dart';
 import 'package:classcontrol_personal/Models/TeacherModel.dart';
+import 'package:classcontrol_personal/Screens/TeacherAddEditScreen.dart';
+import 'package:classcontrol_personal/Screens/TeacherDetailScreen.dart';
 import 'package:classcontrol_personal/util/Constants.dart';
-import 'package:classcontrol_personal/util/SideBarDrawer.dart';
 import 'package:flutter/material.dart';
 
 class TeacherPage extends StatefulWidget {
+  const TeacherPage({Key? key}) : super(key: key);
+
   @override
   _TeacherPageState createState() => _TeacherPageState();
 }
@@ -16,18 +19,10 @@ class _TeacherPageState extends State<TeacherPage> {
   List<TeacherModel> teachers = [];
   bool isLoading = false;
 
-  TextEditingController _teacher = new TextEditingController();
-
   @override
   void initState() {
     super.initState();
     refresh();
-  }
-
-  @override
-  void dispose() {
-    _teacher.dispose();
-    super.dispose();
   }
 
   Future refresh() async {
@@ -45,77 +40,56 @@ class _TeacherPageState extends State<TeacherPage> {
     return Scaffold(
       //drawer: SideDrawer(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await _insertTeacher();
-        },
         child: const Icon(Icons.add),
+        onPressed: () {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => TeacherAddEditScreen(),
+          ));
+        },
       ),
       appBar: AppBar(
         title: const Text(Constants.PT_TEACHER),
-        actions: [
-          SizedBox(
-            width: 200,
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
-              child: TextField(
-                  controller: _teacher,
-                  style: const TextStyle(fontSize: 13),
-                  decoration: InputDecoration(
-                    labelText: Constants.PT_TEACHER,
-                    labelStyle:
-                        TextStyle(color: Colors.blue.shade50, fontSize: 12),
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                      borderSide:
-                          BorderSide(color: Colors.blue.shade50, width: 2.0),
-                      borderRadius: BorderRadius.circular(25.0),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide:
-                          BorderSide(color: Colors.blue.shade50, width: 2.0),
-                      borderRadius: BorderRadius.circular(25.0),
-                    ),
-                  )),
-            ),
-          )
-        ],
       ),
       body: ListView.builder(
-        scrollDirection: Axis.vertical,
-        shrinkWrap: true,
         itemCount: teachers.length,
+        shrinkWrap: true,
         itemBuilder: (context, index) {
           return ListTile(
+            //isThreeLine: true,
             title: Text(teachers[index].name),
             leading: IconButton(
-              onPressed: () => _editTeacher(index),
               icon: const Icon(Icons.edit),
+              onPressed: () => _editTeacher(teachers[index]),
             ),
             trailing: IconButton(
-              onPressed: () => _deleteTeacher(index),
               icon: const Icon(Icons.delete),
+              onPressed: () =>
+                  _deleteTeacher(teachers[index]), //_deleteNote(notes[index]);
             ),
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => TeacherDetailScreen(
+                  teacherModel: teachers[index],
+                ),
+              ));
+            },
           );
         },
       ),
     );
   }
 
-  Future _deleteTeacher(int index) async {
-    //TODO: Teacher item aus DB löschen
-
-    await refresh();
+  Future _deleteTeacher(TeacherModel model) async {
+    await DatabaseHelper.db.deleteTeacher(model);
+    refresh();
   }
 
-  Future _editTeacher(int index) async {
-    //TODO: Teacher item updaten
-    await DatabaseHelper.db.updateTeacher(teachers[index]);
-    await refresh();
-  }
-
-  Future _insertTeacher() async {
-    await DatabaseHelper.db.insertTeacher(_teacher.text.toString());
-    await refresh();
+  Future _editTeacher(TeacherModel model) async {
+    await Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => TeacherAddEditScreen(
+        compartmentModel: model,
+      ),
+    ));
+    refresh();
   }
 }

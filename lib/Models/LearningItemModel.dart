@@ -9,7 +9,7 @@ class LearningItemModel {
   final int stackId;
   final String content;
 
-  LearningItemModel({this.id,required this.stackId, required this.content});
+  LearningItemModel({this.id, required this.stackId, required this.content});
 
   LearningItemModel copy({
     int? id,

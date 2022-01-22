@@ -16,6 +16,8 @@ import 'package:flutter/material.dart';
 //TODO: Icons anpassen. Evt. muss push ersetzt werden durch anderes
 
 class SideDrawer extends StatelessWidget {
+  const SideDrawer({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Drawer(

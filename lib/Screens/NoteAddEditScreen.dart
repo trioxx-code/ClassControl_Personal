@@ -3,6 +3,7 @@
  */
 
 import 'package:classcontrol_personal/Database/DatabaseHelper.dart';
+import 'package:classcontrol_personal/Models/CompartmentModel.dart';
 import 'package:classcontrol_personal/Models/NoteModel.dart';
 import 'package:classcontrol_personal/Util/Misc.dart';
 import 'package:classcontrol_personal/util/Constants.dart';
@@ -15,7 +16,7 @@ class NoteAddEditScreen extends StatefulWidget {
   @override
   _NoteAddEditScreenState createState() => _NoteAddEditScreenState();
 
-  NoteAddEditScreen({this.model});
+  NoteAddEditScreen({Key? key, this.model}) : super(key: key);
 }
 
 class _NoteAddEditScreenState extends State<NoteAddEditScreen> {
@@ -29,6 +30,8 @@ class _NoteAddEditScreenState extends State<NoteAddEditScreen> {
   int _priority = 1;
   bool isAdd = false;
   NoteModel? currentModel;
+  List<CompartmentModel> compartments = [];
+  CompartmentModel? compartmentModel;
 
   @override
   void initState() {
@@ -52,12 +55,14 @@ class _NoteAddEditScreenState extends State<NoteAddEditScreen> {
         title: Text(getTitle()),
         actions: [
           IconButton(
-            icon: Icon(Icons.delete),
+            icon: const Icon(Icons.delete),
             onPressed: () async => await _deleteNoteModel(),
           ),
-          const SizedBox(width: 20,),
+          const SizedBox(
+            width: 20,
+          ),
           IconButton(
-            icon: Icon(Icons.check),
+            icon: const Icon(Icons.check),
             onPressed: () async => await _saveNoteModel(),
           )
         ],
@@ -114,7 +119,7 @@ class _NoteAddEditScreenState extends State<NoteAddEditScreen> {
             ),
             Container(
               decoration: BoxDecoration(border: Border.all(color: COLOR)),
-              child: Column(
+              child: Row(
                 children: [
                   const Text("Priorität"),
                   Padding(
@@ -131,6 +136,17 @@ class _NoteAddEditScreenState extends State<NoteAddEditScreen> {
                       itemCount: 11,
                     ),
                   ),
+                  TextButton(
+                    child: Text(((compartmentModel == null)
+                        ? "Fach"
+                        : compartmentModel!.compartmentTitle)),
+                    onPressed: () async {
+                      await showDialog(
+                        context: context,
+                        builder: (context) => Container(), //TODO
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
@@ -140,18 +156,21 @@ class _NoteAddEditScreenState extends State<NoteAddEditScreen> {
     );
   }
 
-  void initControllersAndValues() {
+  void initControllersAndValues() async {
     dynamic val = ["", ""];
     if (currentModel != null) {
       val[0] = currentModel!.title;
       val[1] = currentModel!.note;
       _priority = currentModel!.priority;
+      //TODO: Die Notiz aus den Hive laden und übergeben
     }
     _titleController = TextEditingController(text: val[0]);
     _noteController = TextEditingController(text: val[1]);
+    compartments = await DatabaseHelper.db.getAllCompartments();
   }
 
   Future _saveNoteModel() async {
+    //TODO: Die Notiz auch in Hive speichern
     currentModel ??= NoteModel(
       priority: _priority,
       note: _noteController.text,
@@ -160,10 +179,12 @@ class _NoteAddEditScreenState extends State<NoteAddEditScreen> {
       //compartmentModel: //@info: TODO
     );
     int d = await DatabaseHelper.db.insertNote(currentModel!);
+    Navigator.of(context).pop();
   }
 
   Future _deleteNoteModel() async {
     int d = await DatabaseHelper.db.deleteNote(currentModel!);
+    Navigator.of(context).pop();
   }
 
   String getTitle() {

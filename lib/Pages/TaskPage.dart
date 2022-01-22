@@ -6,6 +6,8 @@ import 'package:classcontrol_personal/util/SideBarDrawer.dart';
 import 'package:flutter/material.dart';
 
 class TaskPage extends StatefulWidget {
+  const TaskPage({Key? key}) : super(key: key);
+
   @override
   _TaskPageState createState() => _TaskPageState();
 }
@@ -18,9 +20,7 @@ class _TaskPageState extends State<TaskPage> {
       appBar: AppBar(
         title: Text(Constants.PT_TASK),
       ),
-      body: Container(
-
-      ),
+      body: Container(),
     );
   }
 }

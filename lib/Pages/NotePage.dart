@@ -7,64 +7,59 @@ import 'package:classcontrol_personal/Screens/NoteAddEditScreen.dart';
 import 'package:classcontrol_personal/Screens/NoteDetailScreen.dart';
 import 'package:classcontrol_personal/Util/Constants.dart';
 import 'package:classcontrol_personal/Util/Misc.dart';
+import 'package:classcontrol_personal/Widgets/NoteCardWidget.dart';
 import 'package:classcontrol_personal/util/SideBarDrawer.dart';
 import 'package:flutter/material.dart';
 
 class NotePage extends StatefulWidget {
+  const NotePage({Key? key}) : super(key: key);
+
   @override
   _NotePageState createState() => _NotePageState();
 }
 
 class _NotePageState extends State<NotePage> {
   List<NoteModel> notes = [];
+  bool isAsc = true;
+  Icon filterIcon = const Icon(Icons.compare_arrows);
+  Map currentFilter = {
+    "filterArg": DatabaseHelper.noteId,
+    "filterType": Constants.FILTER_ASC
+  };
 
   //TODO: Popup für die Fächer auswahl.
 
   @override
   void initState() {
     super.initState();
-    refresh();
+    generateDebugData();
+    refresh(0);
   }
 
-  Future refresh() async {
+  void generateDebugData() {
+    for (int i = 1; i < 21; i++) {
+      notes.add(NoteModel(
+          title: "Test$i",
+          date: (Misc.getCurrentEpochMilli() + 3600 * 60 * i),
+          note: "kaqwdnawoidwa" + i.toString(),
+          priority: i % 5 * 2 % 7,
+          id: i));
+    }
+  }
+
+  Future refresh(int op) async {
     setState(() {});
-    //notes = await DatabaseHelper.db.getAllNotes();
-    notes.add(NoteModel(
-        title: "Test1",
-        date: Misc.getCurrentEpochMilli()+3600*1,
-        note: "aoidawiod",
-        priority: 5,
-        id: 1));
-    notes.add(NoteModel(
-        title: "Test2",
-        date: Misc.getCurrentEpochMilli()+3600*2,
-        note: "aoidawiod",
-        priority: 5,
-        id: 1));
-    notes.add(NoteModel(
-        title: "Test3",
-        date: Misc.getCurrentEpochMilli()+3600*3,
-        note: "aoidawiod",
-        priority: 5,
-        id: 1));
-    notes.add(NoteModel(
-        title: "Test4",
-        date: Misc.getCurrentEpochMilli()+3600*4,
-        note: "aoidawiod",
-        priority: 5,
-        id: 1));
-    notes.add(NoteModel(
-        title: "Test5",
-        date: Misc.getCurrentEpochMilli()+3600*5,
-        note: "aoidawiod",
-        priority: 5,
-        id: 1));
-    notes.add(NoteModel(
-        title: "Test6",
-        date: Misc.getCurrentEpochMilli()+3600*6,
-        note: "kaqwdnawoidwa",
-        priority: 5,
-        id: 1));
+    switch (op) {
+      case 0:
+        notes = await DatabaseHelper.db.getAllNotes();
+        break;
+      case 1:
+        print(currentFilter["filterArg"] + ":" + currentFilter["filterType"]);
+        notes = await DatabaseHelper.db.getAllNotes(
+            filterArgs: currentFilter["filterArg"] ?? "",
+            filterType: currentFilter["filterType"] ?? "");
+        break;
+    }
     setState(() {});
   }
 
@@ -74,7 +69,6 @@ class _NotePageState extends State<NotePage> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
-          //TODO: Auf extra seite gehen, für neue Notiz
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => NoteAddEditScreen(),
           ));
@@ -83,42 +77,51 @@ class _NotePageState extends State<NotePage> {
       drawer: SideDrawer(),
       appBar: AppBar(
         title: const Text(Constants.PT_NOTE),
+        actions: [
+          IconButton(
+            icon: filterIcon,
+            onPressed: () {
+              if (isAsc) {
+                filterIcon = const Icon(Icons.arrow_downward);
+                currentFilter["filterType"] = Constants.FILTER_ASC;
+                isAsc = false;
+              } else {
+                filterIcon = const Icon(Icons.arrow_upward);
+                currentFilter["filterType"] = Constants.FILTER_DESC;
+                isAsc = true;
+              }
+              refresh(1);
+            },
+          ),
+          PopupMenuButton<String>(
+            onSelected: startSorting,
+            itemBuilder: (BuildContext context) {
+              return {"Reset", "Priorität", "Titel", "Datum", "Fach"}
+                  .map((String choice) {
+                return PopupMenuItem<String>(
+                  value: choice,
+                  child: Text(choice),
+                );
+              }).toList();
+            },
+          ),
+        ],
       ),
       body: ListView.builder(
         itemCount: notes.length,
         shrinkWrap: true,
         itemBuilder: (context, index) {
           return ListTile(
-            isThreeLine: true,
-            title: Text(
-              notes[index].title,
-              textAlign: TextAlign.center,
-            ),
-            subtitle: Row(
-              children: [
-                const SizedBox(
-                  width: 200,
-                ),
-                Text(
-                  Misc.convertEpochToString(notes[index].date),
-                  textAlign: TextAlign.start,
-                ),
-                const SizedBox(
-                  width: 200,
-                ),
-                Text(
-                  "Priorität: " + notes[index].priority.toString(),
-                  textAlign: TextAlign.end,
-                )
-              ],
-            ),
+            //isThreeLine: true,
+            title: NoteCardWidget(noteModel: notes[index], index: index),
             leading: IconButton(
               icon: const Icon(Icons.edit),
               onPressed: () => _editNote(notes[index]),
             ),
             trailing: IconButton(
               icon: const Icon(Icons.delete),
-              onPressed: () => print("TODO"), //_deleteNote(notes[index]);
+              onPressed: () =>
+                  _deleteNote(notes[index]), //_deleteNote(notes[index]);
             ),
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
@@ -137,7 +140,7 @@ class _NotePageState extends State<NotePage> {
 
   Future _deleteNote(NoteModel model) async {
     await DatabaseHelper.db.deleteNote(model);
-    refresh();
+    refresh(0);
   }
 
   Future _editNote(NoteModel model) async {
@@ -146,34 +149,44 @@ class _NotePageState extends State<NotePage> {
         model: model,
       ),
     ));
-    refresh();
+    refresh(0);
   }
-}
+
+  void startSorting(String val) {
+    switch (val) {
+      case "Reset":
+        currentFilter["filterArg"] = DatabaseHelper.noteId;
+        currentFilter["filterType"] = Constants.FILTER_ASC;
+        filterIcon = const Icon(Icons.compare_arrows);
+        isAsc = true;
+        break;
+      case "Titel":
+        currentFilter["filterArg"] = DatabaseHelper.noteTitle;
+        break;
+      case "Priorität":
+        currentFilter["filterArg"] = DatabaseHelper.notePriority;
+        break;
+      case "Fach":
+        currentFilter["filterArg"] = DatabaseHelper.noteCompartment;
+        break;
+      case "Datum":
+        currentFilter["filterArg"] = DatabaseHelper.noteDate;
+        break;
+    }
+    refresh(1);
+  }
 
 /*
-
-subtitle: Column(
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      parseEpochToString(notes[index].date),
-                      textAlign: TextAlign.start,
-                    ),
-                    const SizedBox(
-                      width: 30,
-                    ),
-                    Text(
-                      notes[index].priority.toString(),
-                      textAlign: TextAlign.end,
-                    )
-                  ],
-                ),
-                /*Wrap( //@cleanup
-                  children: [Text(notes[index].note)],
-                )*/
-              ],
-            ),
-
-
+  void _runFilter(String keyword) {
+    if(keyword.isEmpty) {
+      displayedNotes = allNotes;
+    } else {
+      displayedNotes = allNotes..where((find) =>
+          find.toMap()[filterMapping()].toString().toLowerCase().contains(keyword.toLowerCase()))
+          .toList();
+    }
+    setState(() {});
+  }
 */
+
+}

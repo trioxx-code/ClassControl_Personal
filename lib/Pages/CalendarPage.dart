@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CalendarPage extends StatefulWidget {
+  const CalendarPage({Key? key}) : super(key: key);
+
   @override
   _CalendarPageState createState() => _CalendarPageState();
 }
@@ -14,7 +16,8 @@ class CalendarPage extends StatefulWidget {
 //@info: https://pub.dev/packages/table_calendar
 
 class _CalendarPageState extends State<CalendarPage> {
-  List<DateTime> dayValues = List.filled(3, DateTime(1970)); //@info: firstDay, lastDay, focusedDay
+  List<DateTime> dayValues =
+      List.filled(3, DateTime(1970)); //@info: firstDay, lastDay, focusedDay
 
   @override
   void initState() {
@@ -41,15 +44,12 @@ class _CalendarPageState extends State<CalendarPage> {
   Future initCalendar() async {
     DateTime now = DateTime.now();
     dayValues[2] = DateTime(now.day, now.month, now.year);
-    dayValues[1] = DateTime(now.day, now.month, now.year+100);
-    dayValues[0] = DateTime(1,1,1970);
+    dayValues[1] = DateTime(now.day, now.month, now.year + 100);
+    dayValues[0] = DateTime(1, 1, 1970);
     dayValues.forEach((element) {
       print(element);
     });
   }
 
-  Future getCalendarData() async {
-
-  }
-
+  Future getCalendarData() async {}
 }

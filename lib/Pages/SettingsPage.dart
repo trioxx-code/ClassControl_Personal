@@ -3,8 +3,9 @@
 /*
  * Copyright (c) 2021. ClassControl Personal by trioxx
  */ // ignore_for_file: file_names
+import 'package:classcontrol_personal/Pages/CompartmentPage.dart';
 import 'package:classcontrol_personal/Pages/TeacherPage.dart';
-import 'package:classcontrol_personal/util/Constants.dart';
+import 'package:classcontrol_personal/Util/Constants.dart';
 import 'package:classcontrol_personal/util/SharedPreferencesHelper.dart';
 import 'package:classcontrol_personal/util/SideBarDrawer.dart';
 import 'package:flutter/material.dart';
@@ -56,28 +57,43 @@ class _SettingsPageState extends State<SettingsPage> {
         service: _service,
         child: PrefPage(
           children: [
-            Text("TODO"),
-            TextButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Colors.grey),
-              ),
-              child: const Text(
-                Constants.PT_TEACHER,
-                style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
-                    backgroundColor: Colors.grey),
-              ),
+            buildScreenTextButton(
               onPressed: () {
                 Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => TeacherPage(),
                 ));
               },
+              buttonText: Constants.PT_TEACHER,
             ),
+            buildScreenTextButton(
+                buttonText: Constants.PT_COMPARTMENT,
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => CompartmentPage()));
+                }),
             //buildThemePref(), //TODO
           ],
         ),
       ),
+    );
+  }
+
+  Widget buildScreenTextButton({onPressed, String buttonText = ""}) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextButton(
+          style: ButtonStyle(
+            padding: MaterialStateProperty.all(const EdgeInsets.all(50.0)),
+            backgroundColor: MaterialStateProperty.all(Colors.grey),
+          ),
+          child: Text(
+            buttonText,
+            style: TextStyle(
+                fontSize: 24,
+                color: Colors.yellow,
+                backgroundColor: Colors.grey),
+          ),
+          onPressed: onPressed),
     );
   }
 

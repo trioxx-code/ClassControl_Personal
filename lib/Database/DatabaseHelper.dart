@@ -20,7 +20,6 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
-
   //TODO: Fächer haben immer mehrere Noten. Zuordnung benötigt. Map?
   final _tableCompartment = "Compartment";
   static final compartmentId = "CompartmentId";
@@ -88,7 +87,7 @@ class DatabaseHelper {
     return _database!;
   }
 
-  //TODO: SQL-Vervollständigen
+  //TODO: SQL-Vervollständigen + Zuordnung für Lehrer <-> Fächer
   List<String> _createTables() {
     return [
       "${Constants.SQL_CREATE} $_tableTeacher ($teacherId ${Constants.SQL_PS}, $teacherName ${Constants.SQL_TEXT});",
@@ -122,13 +121,16 @@ class DatabaseHelper {
 
   Future close() async {
     final d = await db.database;
-    d.close();
+    await d.close();
+    await db.close();
   }
 
-  Future<List<NoteModel>> getAllNotes() async {
+  Future<List<NoteModel>> getAllNotes(
+      {String? filterType, String? filterArgs}) async {
     final d = await db.database;
     List<NoteModel> notes = [];
-    List<Map> data = await d.rawQuery("SELECT * FROM $_tableNote");
+    List<Map> data = await d
+        .rawQuery("SELECT * FROM $_tableNote ORDER BY $filterArgs $filterType");
     data.forEach((element) {
       notes.add(NoteModel(
         id: element[noteId],
@@ -155,7 +157,8 @@ class DatabaseHelper {
 
   Future<int> deleteNote(NoteModel note) async {
     final d = await db.database;
-    return await d.delete(_tableNote); //TODO
+    return await d
+        .delete(_tableNote, where: "$noteId =? ", whereArgs: [note.id]);
   }
 
   Future<int> updateNote(NoteModel note) async {
@@ -200,22 +203,20 @@ class DatabaseHelper {
     final d = await db.database;
     int res = 0;
     //TODO: Eintrag hinzufügen.
-    int debug = await d.insert(_tableTeacher, {
-      teacherName: name
-    });
-    print("insertTeacher"+debug.toString());
+    res = await d.insert(_tableTeacher, {teacherName: name});
+    print("insertTeacher" + res.toString());
     return res;
   }
 
   Future<int> updateTeacher(TeacherModel teacher) async {
     final d = await db.database;
-    return await d.update(_tableTeacher, {
-      teacherName: teacher.name
-    });
+    return await d.update(_tableTeacher, teacher.toMap());
   }
+
   Future<int> deleteTeacher(TeacherModel teacher) async {
     final d = await db.database;
-    return await d.delete(_tableTeacher, where: "$teacherId =: ?", whereArgs: [teacher.id]);
+    return await d.delete(_tableTeacher,
+        where: "$teacherId =: ?", whereArgs: [teacher.id]);
   }
 
   Future<List<CompartmentModel>> getAllCompartments() async {
@@ -230,6 +231,25 @@ class DatabaseHelper {
       ));
     });
     return compartments;
+  }
+
+  Future<int> insertCompartment(CompartmentModel compartment) async {
+    final d = await db.database;
+    int res = 0;
+    res = await d.insert(_tableCompartment, compartment.toMap());
+    print("insertCompartment" + res.toString());
+    return res;
+  }
+
+  Future<int> updateCompartment(CompartmentModel compartment) async {
+    final d = await db.database;
+    return await d.update(_tableCompartment, compartment.toMap());
+  }
+
+  Future<int> deleteCompartment(CompartmentModel compartment) async {
+    final d = await db.database;
+    return await d.delete(_tableCompartment,
+        where: "$compartmentId =: ?", whereArgs: [compartment.compartmentId]);
   }
 
   Future<List<CalendarModel>> getAllAppointments() async {

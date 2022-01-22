@@ -6,6 +6,8 @@ import 'package:classcontrol_personal/util/SideBarDrawer.dart';
 import 'package:flutter/material.dart';
 
 class TimetablePage extends StatefulWidget {
+  const TimetablePage({Key? key}) : super(key: key);
+
   @override
   _TimetablePageState createState() => _TimetablePageState();
 }
@@ -18,9 +20,7 @@ class _TimetablePageState extends State<TimetablePage> {
       appBar: AppBar(
         title: Text(Constants.PT_TIMETABLE),
       ),
-      body: Container(
-
-      ),
+      body: Container(),
     );
   }
 }

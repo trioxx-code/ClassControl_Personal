@@ -14,7 +14,7 @@ class NoteDetailScreen extends StatefulWidget {
   @override
   _NoteDetailScreenState createState() => _NoteDetailScreenState();
 
-  NoteDetailScreen({required this.noteModel});
+  NoteDetailScreen({Key? key, required this.noteModel}) : super(key: key);
 }
 
 class _NoteDetailScreenState extends State<NoteDetailScreen> {
@@ -42,21 +42,22 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
         title: Text(widget.noteModel.title),
         actions: [
           IconButton(
-            icon: Icon(Icons.delete),
+            icon: const Icon(Icons.delete),
             onPressed: () async {
               await _deleteNoteModel();
               Navigator.of(context).pop();
             },
           ),
-          const SizedBox(width: 20,),
+          const SizedBox(
+            width: 20,
+          ),
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () async {
               await Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) =>
-                    NoteAddEditScreen(
-                      model: widget.noteModel,
-                    ),
+                builder: (context) => NoteAddEditScreen(
+                  model: widget.noteModel,
+                ),
               ));
             },
           ),
@@ -65,13 +66,12 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
       body: SingleChildScrollView(
         child: Column(children: [
           Row(children: [
-            Padding(
-                padding: EdgeInsets.all(_padding),
-                child:
-                Text("Priorität: " + widget.noteModel.priority.toString())),
-            Padding(
-                padding: EdgeInsets.all(_padding),
-                child: Text("Erstell-Datum: " + _dateString))
+            Misc.alignedItem(Alignment.centerLeft,
+                "Erstell-Datum: " + _dateString, Colors.white),
+            Misc.alignedItem(
+                Alignment.centerRight,
+                "Priorität: " + widget.noteModel.priority.toString(),
+                Colors.white),
           ]),
           Padding(
             padding: EdgeInsets.all(_padding),
@@ -84,16 +84,16 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
                   labelText: "Notiz",
                   floatingLabelAlignment: FloatingLabelAlignment.center,
                   labelStyle:
-                  TextStyle(color: Colors.blue.shade50, fontSize: 16),
+                      TextStyle(color: Colors.blue.shade50, fontSize: 16),
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
                     borderSide:
-                    BorderSide(color: Colors.blue.shade50, width: 2.0),
+                        BorderSide(color: Colors.blue.shade50, width: 2.0),
                     //borderRadius: BorderRadius.circular(25.0),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide:
-                    BorderSide(color: Colors.blue.shade50, width: 2.0),
+                        BorderSide(color: Colors.blue.shade50, width: 2.0),
                     //borderRadius: BorderRadius.circular(25.0),
                   ),
                 )),
@@ -106,5 +106,4 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
   Future _deleteNoteModel() async {
     await DatabaseHelper.db.deleteNote(widget.noteModel);
   }
-
 }

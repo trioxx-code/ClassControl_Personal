@@ -2,8 +2,8 @@
  * Copyright (c) 2022. ClassControl Personal by trioxx
  */
 
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
 
 class Misc {
   static const String DATE_FORMAT = "dd.MM.yyyy HH:mm";
@@ -18,4 +18,28 @@ class Misc {
     return DateTime.now().millisecondsSinceEpoch;
   }
 
+  static final lightColors = [
+    Colors.amber.shade300,
+    Colors.lightGreen.shade300,
+    Colors.lightBlue.shade300,
+    Colors.orange.shade300,
+    Colors.pinkAccent.shade100,
+    Colors.tealAccent.shade100,
+  ];
+
+  static Widget alignedItem(Alignment alignement, String text, Color textColor,
+      {double? padding}) {
+    return Expanded(
+      child: Padding(
+        padding: EdgeInsets.all(padding ?? 8.0),
+        child: Align(
+          alignment: alignement,
+          child: Text(
+            text,
+            style: TextStyle(color: textColor),
+          ),
+        ),
+      ),
+    );
+  }
 }

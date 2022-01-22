@@ -5,7 +5,6 @@
 // ignore_for_file: constant_identifier_names
 // ignore_for_file: file_names
 class Constants {
-
   //@info: Icons
   static const CLASSCONTROL_ICON_PATH = "Assets/classcontrol_ic.png";
   static const CLASSCONTROL_SCALED_ICON_PATH = "Assets/cc.png";
@@ -19,6 +18,8 @@ class Constants {
   //@info: Database
   static const DB_VERSION = 1;
   static const DB_Name = "ClassControl_Personal.db";
+  static const FILTER_ASC = "ASC";
+  static const FILTER_DESC = "DESC";
 
   //@info: PT == Page Title
   static const PT_DASHBOARD = "Dashboard";
@@ -31,6 +32,7 @@ class Constants {
   static const PT_WEB = "Web";
   static const PT_NOTE = "Notizen";
   static const PT_TEACHER = "Lehrer";
+  static const PT_COMPARTMENT = "Fächer";
 
   //@info: Screens
   static const SCREEN_ADD = "Hinzufügen";
