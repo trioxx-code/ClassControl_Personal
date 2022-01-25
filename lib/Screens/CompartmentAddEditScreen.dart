@@ -18,11 +18,11 @@ class CompartmentAddEditScreen extends StatefulWidget {
       _CompartmentAddEditScreenState();
 }
 
-//TODO 22.01.2022: Zuordnungstabelle zwischen Lehrer und Fächer
-
 class _CompartmentAddEditScreenState extends State<CompartmentAddEditScreen> {
   late TextEditingController _compartmentController;
+  late Icon icon;
   CompartmentModel? currentModel;
+  bool isAdd = false;
 
   @override
   void initState() {
@@ -43,16 +43,18 @@ class _CompartmentAddEditScreenState extends State<CompartmentAddEditScreen> {
       appBar: AppBar(
         title: Text(getTitle()),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: () async => await _deleteTeacherModel(),
-          ),
+          !isAdd
+              ? IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () async => await _deleteCompartmentModel(),
+                )
+              : Container(),
           const SizedBox(
             width: 20,
           ),
           IconButton(
-            icon: const Icon(Icons.check),
-            onPressed: () async => await _saveTeacherModel(),
+            icon: icon,
+            onPressed: () => addOrUpdateCompartmentModel(),
           )
         ],
       ),
@@ -83,7 +85,6 @@ class _CompartmentAddEditScreenState extends State<CompartmentAddEditScreen> {
                     ),
                   )),
             ),
-            buildTeacherList(),
           ],
         ),
       ),
@@ -96,6 +97,12 @@ class _CompartmentAddEditScreenState extends State<CompartmentAddEditScreen> {
       compartment = currentModel!.compartmentTitle;
     }
     _compartmentController = TextEditingController(text: compartment);
+    if (getTitle() == Constants.SCREEN_ADD) {
+      isAdd = true;
+      icon = const Icon(Icons.add);
+    } else {
+      icon = const Icon(Icons.edit);
+    }
   }
 
   String getTitle() {
@@ -104,20 +111,34 @@ class _CompartmentAddEditScreenState extends State<CompartmentAddEditScreen> {
     return res;
   }
 
-  Future _saveTeacherModel() async {
-    currentModel ??= CompartmentModel(
-        compartmentTitle: _compartmentController.text,
-        teacherModel: TeacherModel(name: ""));
-    int d = await DatabaseHelper.db.insertCompartment(currentModel!);
+  void addOrUpdateCompartmentModel() {
+    if (isAdd) {
+      _insertCompartmentModel();
+    } else {
+      _updateCompartmentModel();
+    }
     Navigator.of(context).pop();
   }
 
-  Future _deleteTeacherModel() async {
+  Future _insertCompartmentModel() async {
+    currentModel ??= CompartmentModel(
+      compartmentTitle: _compartmentController.text,
+    );
+    int d = await DatabaseHelper.db.insertCompartment(currentModel!);
+  }
+
+  Future _updateCompartmentModel() async {
+    if (currentModel != null) {
+      int? id = currentModel!.compartmentId;
+      currentModel = CompartmentModel(
+          compartmentId: id, compartmentTitle: _compartmentController.text);
+      await DatabaseHelper.db.updateCompartment(currentModel!);
+    } else
+      print("ERROR: updateCompartmentModel"); //@debug @cleanup
+  }
+
+  Future _deleteCompartmentModel() async {
     int d = await DatabaseHelper.db.deleteCompartment(currentModel!);
     Navigator.of(context).pop();
-  }
-
-  Widget buildTeacherList() {
-    return Container(); //TODO: Wie bei BibelVersTrainer
   }
 }

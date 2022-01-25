@@ -76,6 +76,11 @@ class DatabaseHelper {
   static final teacherId = "TeacherId";
   static final teacherName = "TeacherName";
 
+  final _tableTCA = "TeacherCompartmentAssignment";
+  static final tcaId = "TCAId";
+  static final tcaTId = teacherId;
+  static final tcaCId = compartmentId;
+
   DatabaseHelper._privateConstructor();
 
   static final DatabaseHelper db = DatabaseHelper._privateConstructor();
@@ -92,13 +97,14 @@ class DatabaseHelper {
     return [
       "${Constants.SQL_CREATE} $_tableTeacher ($teacherId ${Constants.SQL_PS}, $teacherName ${Constants.SQL_TEXT});",
       "${Constants.SQL_CREATE} $_tableCalendar ($calendarId ${Constants.SQL_PS}, $calendarTitle ${Constants.SQL_TEXT}, $calendarDesc TEXT, $calendarDate INTEGER NOT NULL, $calendarMarkColor INTEGER, $calendarIsChecked INTEGER);",
-      "${Constants.SQL_CREATE} $_tableLearningItem ($learningItemId ${Constants.SQL_PS}, $learningItemContent ${Constants.SQL_TEXT}, $learningItemStackId INTEGER NOT NULL, FOREIGN KEY($learningItemStackId) REFERENCES $_tableLearningStack.$learningStackId);",
       "${Constants.SQL_CREATE} $_tableLearningStack ($learningStackId ${Constants.SQL_PS}, $learningStackTitle ${Constants.SQL_TEXT});",
-      "${Constants.SQL_CREATE} $_tableNote ($noteId ${Constants.SQL_PS}, $noteTitle ${Constants.SQL_TEXT}, $noteNote TEXT, $notePriority INTEGER NOT NULL, $noteDate INTEGER NOT NULL, $noteCompartment INTEGER NOT NULL, FOREIGN KEY($noteCompartment) REFERENCES $_tableCompartment.$compartmentId);",
+      "${Constants.SQL_CREATE} $_tableLearningItem ($learningItemId ${Constants.SQL_PS}, $learningItemContent ${Constants.SQL_TEXT}, $learningItemStackId INTEGER NOT NULL, FOREIGN KEY($learningItemStackId) REFERENCES $_tableLearningStack($learningStackId));",
+      "${Constants.SQL_CREATE} $_tableCompartment ($compartmentId ${Constants.SQL_PS}, $compartmentTitle ${Constants.SQL_TEXT});",
+      "${Constants.SQL_CREATE} $_tableNote ($noteId ${Constants.SQL_PS}, $noteTitle ${Constants.SQL_TEXT}, $noteNote TEXT, $notePriority INTEGER NOT NULL, $noteDate INTEGER NOT NULL, $noteCompartment INTEGER NOT NULL, FOREIGN KEY($noteCompartment) REFERENCES $_tableCompartment($compartmentId));",
       //TODO: "${Constants.SQL_CREATE} $_tablePerformance ($performanceId ${Constants.SQL_PS}, $performanceTitle ${Constants.SQL_TEXT}, $performanceMark);",
-      "${Constants.SQL_CREATE} $_tableTask ($taskId ${Constants.SQL_PS}, $taskTitle ${Constants.SQL_TEXT}, $taskDesc ${Constants.SQL_TEXT}, $taskPriority INTEGER NOT NULL, $taskDateTime INTEGER NOT NULL, $taskCompartment INTEGER NOT NULL, $taskIsChecked INTEGER NOT NULL, FOREIGN KEY($taskCompartment) REFERENCES $_tableCompartment.$compartmentId);",
+      "${Constants.SQL_CREATE} $_tableTask ($taskId ${Constants.SQL_PS}, $taskTitle ${Constants.SQL_TEXT}, $taskDesc ${Constants.SQL_TEXT}, $taskPriority INTEGER NOT NULL, $taskDateTime INTEGER NOT NULL, $taskCompartment INTEGER NOT NULL, $taskIsChecked INTEGER NOT NULL, FOREIGN KEY($taskCompartment) REFERENCES $_tableCompartment($compartmentId));",
       "${Constants.SQL_CREATE} $_tableTimetable ($timetableId ${Constants.SQL_PS}, $timetableTitle ${Constants.SQL_TEXT}, $timetableWeekday ${Constants.SQL_TEXT}, $timetableTime ${Constants.SQL_TEXT});",
-      "${Constants.SQL_CREATE} $_tableCompartment ($compartmentId ${Constants.SQL_PS}, $compartmentTitle ${Constants.SQL_TEXT}, $compartmentTeacher INTEGER NOT NULL, FOREIGN KEY($compartmentTeacher) REFERENCES $_tableTeacher.$teacherId);",
+      "${Constants.SQL_CREATE} $_tableTCA ($tcaId ${Constants.SQL_PS}, $tcaTId INTEGER NOT NULL, $tcaCId INTEGER NOT NULL, FOREIGN KEY($tcaTId) REFERENCES $_tableTeacher($teacherId), FOREIGN KEY($tcaCId) REFERENCES $_tableCompartment($compartmentId));",
     ];
   }
 
@@ -113,8 +119,8 @@ class DatabaseHelper {
     List tables = _createTables();
     print("TABLES:");
     tables.forEach((element) async {
-      print(element.toString());
-      //await db.execute(element);
+      print(element.toString() + "\n");
+      await db.execute(element);
     });
     return;
   }
@@ -129,8 +135,11 @@ class DatabaseHelper {
       {String? filterType, String? filterArgs}) async {
     final d = await db.database;
     List<NoteModel> notes = [];
-    List<Map> data = await d
-        .rawQuery("SELECT * FROM $_tableNote ORDER BY $filterArgs $filterType");
+    String sql = "SELECT * FROM $_tableNote";
+    if (filterType != null && filterArgs != null) {
+      sql += " ORDER BY $filterArgs $filterType";
+    }
+    List<Map> data = await d.rawQuery(sql);
     data.forEach((element) {
       notes.add(NoteModel(
         id: element[noteId],
@@ -163,14 +172,8 @@ class DatabaseHelper {
 
   Future<int> updateNote(NoteModel note) async {
     final d = await db.database;
-    return await d.update(_tableNote, {
-      noteId: note.id,
-      noteTitle: note.title,
-      noteCompartment: note.compartmentModel,
-      noteDate: note.date,
-      notePriority: note.priority,
-      noteNote: note.note
-    });
+    return await d.update(_tableNote, note.toMap(),
+        where: "$noteId =?", whereArgs: [note.id]);
   }
 
   Future<List<TimetableModel>> getAllTimetableData() async {
@@ -210,13 +213,15 @@ class DatabaseHelper {
 
   Future<int> updateTeacher(TeacherModel teacher) async {
     final d = await db.database;
-    return await d.update(_tableTeacher, teacher.toMap());
+    return await d.update(_tableTeacher, teacher.toMap(),
+        where: "$teacherId =?", whereArgs: [teacher.id]);
   }
 
   Future<int> deleteTeacher(TeacherModel teacher) async {
     final d = await db.database;
-    return await d.delete(_tableTeacher,
-        where: "$teacherId =: ?", whereArgs: [teacher.id]);
+    await deleteTCAById(false, teacher.id!);
+    return await d
+        .delete(_tableTeacher, where: "$teacherId =?", whereArgs: [teacher.id]);
   }
 
   Future<List<CompartmentModel>> getAllCompartments() async {
@@ -227,15 +232,106 @@ class DatabaseHelper {
       compartments.add(CompartmentModel(
         compartmentId: element[compartmentId],
         compartmentTitle: element[compartmentTitle],
-        teacherModel: element[compartmentTeacher],
       ));
     });
     return compartments;
   }
 
+  Future<int> insertTCA(Map<String, dynamic> entry) async {
+    final d = await db.database;
+    print(entry);
+    return await d.insert(_tableTCA, entry);
+  }
+
+  Future<List<Map<String, dynamic>>> getAllTCA() async {
+    final d = await db.database;
+    return await d.query(_tableTCA);
+  }
+
+  Future<int> updateTCA(Map<String, dynamic> entry) async {
+    final d = await db.database;
+    int id = entry[tcaId];
+    return await d
+        .update(_tableTCA, entry, where: "$tcaId =?", whereArgs: [id]);
+  }
+
+  Future<int> deleteTCA(int id) async {
+    final d = await db.database;
+    return await d.delete(_tableTCA, where: "$tcaId =?", whereArgs: [id]);
+  }
+
+  Future<int> deleteTCAById(bool isComp, int fId) async {
+    final d = await db.database;
+    String whereParam = ((isComp) ? "$tcaCId =?" : "$tcaTId =?");
+    return await d.delete(_tableTCA, where: whereParam, whereArgs: [fId]);
+  }
+
+  Future<int> deleteTCAByIds(int compartmentId, int teacherId) async {
+    final d = await db.database;
+    return await d.delete(_tableTCA,
+        where: " $tcaCId = ? AND $tcaTId = ? ",
+        whereArgs: [compartmentId, teacherId]);
+  }
+
+  Future<List<TeacherModel>> getAssignedTeachersFromCompartment(
+      CompartmentModel compartmentModel) async {
+    final d = await db.database;
+    //TODO: überprüfen
+    List<Map> data = await d.rawQuery(
+        "SELECT * FROM $_tableCompartment INNER JOIN $_tableTCA ON $_tableCompartment.$compartmentId = $_tableTCA.$tcaCId INNER JOIN $_tableTeacher ON $_tableTCA.$tcaTId = $_tableTeacher.$teacherId WHERE $_tableCompartment.$compartmentTitle = '${compartmentModel.compartmentTitle}'");
+    //"SELECT * FROM  $_tableBooks INNER JOIN $_tableVerse ON $_tableBooks.$booksId = $_tableVerse.$avcBooksId INNER JOIN $_tableCVA ON $_tableCVA.$cvaVId = $_tableVerse.$verseId INNER JOIN $_tableCategory ON $_tableCVA.$cvaCId = $_tableCategory.$categoryId WHERE $_tableCategory.$categoryName = '${category.categoryName}'");
+    List<TeacherModel> res = [];
+    data.forEach((element) {
+      print(element[teacherId].toString() +
+          ":::" +
+          compartmentModel.compartmentId.toString());
+      res.add(TeacherModel(
+        id: element[teacherId],
+        name: element[teacherName],
+      ));
+    });
+    print("assigned teachers: ${res.length}"); //@debug
+    return res;
+  }
+
+  Future<List<TeacherModel>> getNotAssignedTeachersFromCompartment(
+      CompartmentModel compartmentModel) async {
+    List<TeacherModel> assignedTeachers =
+        await getAssignedTeachersFromCompartment(compartmentModel);
+    List<TeacherModel> allTeachers = await getAllTeachers();
+    for (int i = 0; i < assignedTeachers.length; i++) {
+      for (int j = 0; j < allTeachers.length; j++) {
+        //print("${assignedCat[i].id} == ${allCategories[j].id}"); //@debug
+        if (allTeachers[j].id == assignedTeachers[i].id) {
+          allTeachers.removeAt(j);
+        }
+      }
+    }
+    return allTeachers;
+  }
+
+  Future<CompartmentModel> getCompartmentById(int id) async {
+    final d = await db.database;
+    final cols = [compartmentId, compartmentTitle];
+    final data = await d.query(
+      _tableCompartment,
+      columns: cols,
+      where: '$compartmentId = ?',
+      whereArgs: [id],
+    );
+    if (data.isNotEmpty) {
+      return CompartmentModel.fromMap(data.first);
+    } else {
+      throw Exception('ID $id not found');
+    }
+  }
+
   Future<int> insertCompartment(CompartmentModel compartment) async {
     final d = await db.database;
     int res = 0;
+    print(compartment.compartmentTitle +
+        ":id:" +
+        compartment.compartmentId.toString());
     res = await d.insert(_tableCompartment, compartment.toMap());
     print("insertCompartment" + res.toString());
     return res;
@@ -243,11 +339,13 @@ class DatabaseHelper {
 
   Future<int> updateCompartment(CompartmentModel compartment) async {
     final d = await db.database;
-    return await d.update(_tableCompartment, compartment.toMap());
+    return await d.update(_tableCompartment, compartment.toMap(),
+        where: "$compartmentId =?", whereArgs: [compartment.compartmentId]);
   }
 
   Future<int> deleteCompartment(CompartmentModel compartment) async {
     final d = await db.database;
+    await deleteTCAById(true, compartment.compartmentId!);
     return await d.delete(_tableCompartment,
         where: "$compartmentId =: ?", whereArgs: [compartment.compartmentId]);
   }
@@ -283,8 +381,6 @@ class DatabaseHelper {
         isChecked: element[taskIsChecked],
         taskCompartment: CompartmentModel(
           compartmentId: element[compartmentId],
-          teacherModel:
-              TeacherModel(id: element[teacherId], name: element[teacherName]),
           compartmentTitle: element[compartmentTitle],
         ),
         taskPriority: element[taskPriority],
@@ -303,10 +399,9 @@ class DatabaseHelper {
         id: element[performanceId],
         title: performanceTitle,
         compartment: CompartmentModel(
-            compartmentId: element[compartmentId],
-            compartmentTitle: element[compartmentTitle],
-            teacherModel: TeacherModel(
-                id: element[teacherId], name: element[teacherName])),
+          compartmentId: element[compartmentId],
+          compartmentTitle: element[compartmentTitle],
+        ),
         mark: element[performanceMark],
       ));
     });

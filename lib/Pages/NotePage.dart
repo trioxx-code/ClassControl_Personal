@@ -26,13 +26,13 @@ class _NotePageState extends State<NotePage> {
     "filterArg": DatabaseHelper.noteId,
     "filterType": Constants.FILTER_ASC
   };
-
+  bool isLoading = false;
   //TODO: Popup für die Fächer auswahl.
 
   @override
   void initState() {
     super.initState();
-    generateDebugData();
+    //generateDebugData(); //@debug @cleanup @info: windows
     refresh(0);
   }
 
@@ -48,19 +48,23 @@ class _NotePageState extends State<NotePage> {
   }
 
   Future refresh(int op) async {
-    setState(() {});
+    setState(() {
+      isLoading = true;
+    });
     switch (op) {
       case 0:
         notes = await DatabaseHelper.db.getAllNotes();
         break;
       case 1:
-        print(currentFilter["filterArg"] + ":" + currentFilter["filterType"]);
+        print(currentFilter["filterArg"] + ":" + currentFilter["filterType"]); //@debug
         notes = await DatabaseHelper.db.getAllNotes(
             filterArgs: currentFilter["filterArg"] ?? "",
             filterType: currentFilter["filterType"] ?? "");
         break;
     }
-    setState(() {});
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -74,7 +78,7 @@ class _NotePageState extends State<NotePage> {
           ));
         },
       ),
-      drawer: SideDrawer(),
+      drawer: const SideDrawer(),
       appBar: AppBar(
         title: const Text(Constants.PT_NOTE),
         actions: [
@@ -107,36 +111,42 @@ class _NotePageState extends State<NotePage> {
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: notes.length,
-        shrinkWrap: true,
-        itemBuilder: (context, index) {
-          return ListTile(
-            //isThreeLine: true,
-            title: NoteCardWidget(noteModel: notes[index], index: index),
-            leading: IconButton(
-              icon: const Icon(Icons.edit),
-              onPressed: () => _editNote(notes[index]),
-            ),
-            trailing: IconButton(
-              icon: const Icon(Icons.delete),
-              onPressed: () =>
-                  _deleteNote(notes[index]), //_deleteNote(notes[index]);
-            ),
-            onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => NoteDetailScreen(
-                  noteModel: notes[index],
-                ),
-              ));
-            },
-          );
-        },
-      ),
+      body: Center(
+        child: isLoading
+            ? const CircularProgressIndicator()
+            : notes.isEmpty
+            ? const Text("Noch keine Einträge vorhanden",
+            style: TextStyle(color: Colors.white, fontSize: 24))
+            : buildNotes(),
+      )
     );
   }
 
-  //TODO-FUTURE: Datum+Uhrzeit, Parsing in anderen thread machen
+  Widget buildNotes() => ListView.builder(
+    itemCount: notes.length,
+    shrinkWrap: true,
+    itemBuilder: (context, index) {
+      return ListTile(
+        title: NoteCardWidget(noteModel: notes[index], index: index),
+        leading: IconButton(
+          icon: const Icon(Icons.edit),
+          onPressed: () => _editNote(notes[index]),
+        ),
+        trailing: IconButton(
+          icon: const Icon(Icons.delete),
+          onPressed: () =>
+              _deleteNote(notes[index]), //_deleteNote(notes[index]);
+        ),
+        onTap: () {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => NoteDetailScreen(
+              noteModel: notes[index],
+            ),
+          ));
+        },
+      );
+    },
+  );
 
   Future _deleteNote(NoteModel model) async {
     await DatabaseHelper.db.deleteNote(model);
@@ -175,8 +185,9 @@ class _NotePageState extends State<NotePage> {
     }
     refresh(1);
   }
+}
 
-/*
+/* @info: Brauchbarkeit prüfen
   void _runFilter(String keyword) {
     if(keyword.isEmpty) {
       displayedNotes = allNotes;
@@ -188,5 +199,3 @@ class _NotePageState extends State<NotePage> {
     setState(() {});
   }
 */
-
-}

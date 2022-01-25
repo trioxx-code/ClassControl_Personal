@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 class TeacherDetailScreen extends StatefulWidget {
   final TeacherModel teacherModel;
 
-  TeacherDetailScreen({Key? key, required this.teacherModel}) : super(key: key);
+  const TeacherDetailScreen({Key? key, required this.teacherModel}) : super(key: key);
 
   @override
   _TeacherDetailScreenState createState() => _TeacherDetailScreenState();
@@ -49,9 +49,11 @@ class _TeacherDetailScreenState extends State<TeacherDetailScreen> {
       body: SingleChildScrollView(
           child: Padding(
         padding: const EdgeInsets.all(20),
-        child: Text(
-          widget.teacherModel.name,
-          style: TextStyle(color: Colors.blue.shade50, fontSize: 16),
+        child: Center(
+          child: Text(
+            widget.teacherModel.name,
+            style: TextStyle(color: Colors.blue.shade50, fontSize: 24),
+          ),
         ),
       )),
     );

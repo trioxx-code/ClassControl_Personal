@@ -19,6 +19,8 @@ class TeacherAddEditScreen extends StatefulWidget {
 class _TeacherAddEditScreenState extends State<TeacherAddEditScreen> {
   late TextEditingController _teacherController;
   TeacherModel? currentModel;
+  late Icon icon;
+  bool isAdd = false;
 
   @override
   void initState() {
@@ -39,16 +41,18 @@ class _TeacherAddEditScreenState extends State<TeacherAddEditScreen> {
       appBar: AppBar(
         title: Text(getTitle()),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: () async => await _deleteTeacherModel(),
-          ),
+          !isAdd
+              ? IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () async => await _deleteTeacherModel(),
+                )
+              : Container(),
           const SizedBox(
             width: 20,
           ),
           IconButton(
-            icon: const Icon(Icons.check),
-            onPressed: () async => await _saveTeacherModel(),
+            icon: icon,
+            onPressed: () => addOrUpdateTeacherModel(),
           )
         ],
       ),
@@ -88,6 +92,12 @@ class _TeacherAddEditScreenState extends State<TeacherAddEditScreen> {
       name = currentModel!.name;
     }
     _teacherController = TextEditingController(text: name);
+    if (getTitle() == Constants.SCREEN_ADD) {
+      isAdd = true;
+      icon = const Icon(Icons.add);
+    } else {
+      icon = const Icon(Icons.edit);
+    }
   }
 
   String getTitle() {
@@ -96,12 +106,29 @@ class _TeacherAddEditScreenState extends State<TeacherAddEditScreen> {
     return res;
   }
 
-  Future _saveTeacherModel() async {
+  void addOrUpdateTeacherModel() {
+    if (isAdd) {
+      _insertTeacherModel();
+    } else {
+      _updateTeacherModel();
+    }
+    Navigator.of(context).pop();
+  }
+
+  Future _insertTeacherModel() async {
     currentModel ??= TeacherModel(
       name: _teacherController.text,
     );
     int d = await DatabaseHelper.db.insertTeacher(currentModel!.name);
-    Navigator.of(context).pop();
+  }
+
+  Future _updateTeacherModel() async {
+    if (currentModel != null) {
+      int? id = currentModel!.id;
+      currentModel = TeacherModel(id: id, name: _teacherController.text);
+      await DatabaseHelper.db.updateTeacher(currentModel!);
+    } else
+      print("ERROR: updateTeacherModel"); //@debug @cleanup
   }
 
   Future _deleteTeacherModel() async {

@@ -5,7 +5,7 @@ import 'package:classcontrol_personal/Database/DatabaseHelper.dart';
 import 'package:classcontrol_personal/Models/TeacherModel.dart';
 import 'package:classcontrol_personal/Screens/TeacherAddEditScreen.dart';
 import 'package:classcontrol_personal/Screens/TeacherDetailScreen.dart';
-import 'package:classcontrol_personal/util/Constants.dart';
+import 'package:classcontrol_personal/Util/Constants.dart';
 import 'package:flutter/material.dart';
 
 class TeacherPage extends StatefulWidget {
@@ -38,19 +38,30 @@ class _TeacherPageState extends State<TeacherPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //drawer: SideDrawer(),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => TeacherAddEditScreen(),
-          ));
-        },
-      ),
-      appBar: AppBar(
-        title: const Text(Constants.PT_TEACHER),
-      ),
-      body: ListView.builder(
+        //drawer: SideDrawer(),
+        floatingActionButton: FloatingActionButton(
+          child: const Icon(Icons.add),
+          onPressed: () async {
+            await Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => TeacherAddEditScreen(),
+            ));
+            refresh();
+          },
+        ),
+        appBar: AppBar(
+          title: const Text(Constants.PT_TEACHER),
+        ),
+        body: Center(
+          child: isLoading
+              ? const CircularProgressIndicator()
+              : teachers.isEmpty
+                  ? const Text(Constants.NO_DATA,
+                      style: TextStyle(color: Colors.white, fontSize: 24))
+                  : buildTeachers(),
+        ));
+  }
+
+  Widget buildTeachers() => ListView.builder(
         itemCount: teachers.length,
         shrinkWrap: true,
         itemBuilder: (context, index) {
@@ -64,24 +75,23 @@ class _TeacherPageState extends State<TeacherPage> {
             trailing: IconButton(
               icon: const Icon(Icons.delete),
               onPressed: () =>
-                  _deleteTeacher(teachers[index]), //_deleteNote(notes[index]);
+                  _deleteTeacher(teachers[index]),
             ),
-            onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
+            onTap: () async {
+              await Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => TeacherDetailScreen(
                   teacherModel: teachers[index],
                 ),
               ));
+              refresh();
             },
           );
         },
-      ),
-    );
-  }
+      );
 
   Future _deleteTeacher(TeacherModel model) async {
     await DatabaseHelper.db.deleteTeacher(model);
-    refresh();
+    await refresh();
   }
 
   Future _editTeacher(TeacherModel model) async {
@@ -90,6 +100,6 @@ class _TeacherPageState extends State<TeacherPage> {
         compartmentModel: model,
       ),
     ));
-    refresh();
+    await refresh();
   }
 }

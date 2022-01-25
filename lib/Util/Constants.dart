@@ -38,6 +38,8 @@ class Constants {
   static const SCREEN_ADD = "Hinzufügen";
   static const SCREEN_EDIT = "Bearbeiten";
 
+  static const NO_DATA = "Noch keine Einträge vorhanden";
+
   //@info: SQL Boilerplate
   static const SQL_CREATE = "CREATE TABLE";
   static const SQL_PS = "INTEGER PRIMARY KEY NOT NULL";

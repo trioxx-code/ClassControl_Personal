@@ -8,7 +8,6 @@ import 'package:classcontrol_personal/Models/NoteModel.dart';
 import 'package:classcontrol_personal/Util/Misc.dart';
 import 'package:classcontrol_personal/util/Constants.dart';
 import 'package:flutter/material.dart';
-import 'package:numberpicker/numberpicker.dart';
 
 class NoteAddEditScreen extends StatefulWidget {
   NoteModel? model;
@@ -19,13 +18,14 @@ class NoteAddEditScreen extends StatefulWidget {
   NoteAddEditScreen({Key? key, this.model}) : super(key: key);
 }
 
+//TODO: flutter_quill integrieren
+//TODO: ^-> Hive implementieren und Speichern der Notiz in Hive übernehmen
+
 class _NoteAddEditScreenState extends State<NoteAddEditScreen> {
   final PADDING = 10.0;
   final COLOR = Colors.blueGrey.shade100;
   late TextEditingController _titleController;
   late TextEditingController _noteController;
-
-  //TextEditingController _date = new TextEditingController();
 
   int _priority = 1;
   bool isAdd = false;
@@ -44,7 +44,6 @@ class _NoteAddEditScreenState extends State<NoteAddEditScreen> {
   void dispose() {
     _titleController.dispose();
     _noteController.dispose();
-    //_date.dispose();
     super.dispose();
   }
 
@@ -93,6 +92,45 @@ class _NoteAddEditScreenState extends State<NoteAddEditScreen> {
                     ),
                   )),
             ),
+            Container(
+              decoration: BoxDecoration(border: Border.all(color: COLOR)),
+              child: Row(
+                children: [
+                  const Text("Priorität"),
+                  Padding(
+                    padding: EdgeInsets.all(PADDING),
+                    child: Slider(
+                      min: 1,
+                      max: 10,
+                      label: _priority.toString(),
+                      divisions: 10,
+                      value: _priority.toDouble(),
+                      onChanged: (value) {
+                        setState(() {
+                          _priority = value.toInt();
+                        });
+                      },
+                    )
+                  ),
+                  TextButton(
+                    child: Text(((compartmentModel == null)
+                        ? "Fach"
+                        : compartmentModel!.compartmentTitle)),
+                    onPressed: () async {
+                      await showDialog(
+                        context: context,
+                        builder: (context) => selectCompartmentDialog(),
+                      );
+                      setState(() {});
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.grey.shade900),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
             Padding(
               padding: EdgeInsets.all(PADDING),
               child: TextField(
@@ -117,39 +155,6 @@ class _NoteAddEditScreenState extends State<NoteAddEditScreen> {
                     ),
                   )),
             ),
-            Container(
-              decoration: BoxDecoration(border: Border.all(color: COLOR)),
-              child: Row(
-                children: [
-                  const Text("Priorität"),
-                  Padding(
-                    padding: EdgeInsets.all(PADDING),
-                    child: NumberPicker(
-                      value: _priority,
-                      onChanged: (value) {
-                        setState(() {
-                          _priority = value;
-                        });
-                      },
-                      maxValue: 10,
-                      minValue: 1,
-                      itemCount: 11,
-                    ),
-                  ),
-                  TextButton(
-                    child: Text(((compartmentModel == null)
-                        ? "Fach"
-                        : compartmentModel!.compartmentTitle)),
-                    onPressed: () async {
-                      await showDialog(
-                        context: context,
-                        builder: (context) => Container(), //TODO
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
           ],
         ),
       ),
@@ -162,6 +167,7 @@ class _NoteAddEditScreenState extends State<NoteAddEditScreen> {
       val[0] = currentModel!.title;
       val[1] = currentModel!.note;
       _priority = currentModel!.priority;
+      compartmentModel = currentModel!.compartmentModel;
       //TODO: Die Notiz aus den Hive laden und übergeben
     }
     _titleController = TextEditingController(text: val[0]);
@@ -176,7 +182,7 @@ class _NoteAddEditScreenState extends State<NoteAddEditScreen> {
       note: _noteController.text,
       title: _titleController.text,
       date: Misc.getCurrentEpochMilli(),
-      //compartmentModel: //@info: TODO
+      compartmentModel: compartmentModel
     );
     int d = await DatabaseHelper.db.insertNote(currentModel!);
     Navigator.of(context).pop();
@@ -192,29 +198,36 @@ class _NoteAddEditScreenState extends State<NoteAddEditScreen> {
         ((currentModel == null) ? Constants.SCREEN_ADD : Constants.SCREEN_EDIT);
     return res;
   }
-}
 
-//@cleanup
-/*Padding(
-              padding: EdgeInsets.all(PADDING),
-              child: TextField(
-                  controller: _date,
-                  style: const TextStyle(fontSize: 16),
-                  decoration: InputDecoration(
-                    labelText: "Datum / Uhrzeit",
-                    floatingLabelAlignment: FloatingLabelAlignment.center,
-                    labelStyle:
-                        TextStyle(color: Colors.blue.shade50, fontSize: 16),
-                    fillColor: Colors.white,
-                    border: OutlineInputBorder(
-                      borderSide:
-                          BorderSide(color: Colors.blue.shade50, width: 2.0),
-                      borderRadius: BorderRadius.circular(25.0),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide:
-                          BorderSide(color: Colors.blue.shade50, width: 2.0),
-                      borderRadius: BorderRadius.circular(25.0),
-                    ),
-                  )),
-            ),*/
+  Widget selectCompartmentDialog() => Card(
+    child: Column(children: [
+      Expanded(
+        child: ListView.builder(
+          itemCount: compartments.length,
+          shrinkWrap: true,
+          itemBuilder: (context, index) => TextButton(
+            child: Text(compartments[index].compartmentTitle, textAlign: TextAlign.center,),
+            onPressed: () {
+              compartmentModel = compartments[index];
+              Navigator.of(context).pop();
+            },
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(Colors.grey.shade900),
+            ),
+            ),
+        )
+      ),
+      TextButton(
+        onPressed: () => Navigator.of(context).pop(),
+        child: const Text(
+          "Schließen",
+          style: TextStyle(color: Colors.red, fontSize: 18),
+        ),
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.all(Colors.grey.shade900),
+        ),
+      ),
+    ]),
+  );
+
+}
