@@ -112,7 +112,7 @@ class _CompartmentDetailScreenState extends State<CompartmentDetailScreen> {
       isLoading = true;
     });
     compartmentModel =
-        await DatabaseHelper.db.getCompartmentById(widget.compartmentId);
+        (await DatabaseHelper.db.getCompartmentById(widget.compartmentId))!;
     teachers = await DatabaseHelper.db
         .getAssignedTeachersFromCompartment(compartmentModel);
     setState(() {

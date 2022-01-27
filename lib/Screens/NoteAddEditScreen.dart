@@ -26,7 +26,7 @@ class _NoteAddEditScreenState extends State<NoteAddEditScreen> {
   final COLOR = Colors.blueGrey.shade100;
   late TextEditingController _titleController;
   late TextEditingController _noteController;
-
+  late Icon icon;
   int _priority = 1;
   bool isAdd = false;
   NoteModel? currentModel;
@@ -36,6 +36,12 @@ class _NoteAddEditScreenState extends State<NoteAddEditScreen> {
   @override
   void initState() {
     super.initState();
+    if(getTitle() == Constants.SCREEN_ADD) {
+      icon = const Icon(Icons.check);
+      isAdd = true;
+    } else {
+      icon = const Icon(Icons.edit);
+    }
     currentModel = widget.model;
     initControllersAndValues();
   }
@@ -61,8 +67,8 @@ class _NoteAddEditScreenState extends State<NoteAddEditScreen> {
             width: 20,
           ),
           IconButton(
-            icon: const Icon(Icons.check),
-            onPressed: () async => await _saveNoteModel(),
+            icon: icon,
+            onPressed: () => addOrUpdateNoteModel(),
           )
         ],
       ),
@@ -98,39 +104,38 @@ class _NoteAddEditScreenState extends State<NoteAddEditScreen> {
                 children: [
                   const Text("Priorität"),
                   Padding(
-                    padding: EdgeInsets.all(PADDING),
-                    child: Slider(
-                      min: 1,
-                      max: 10,
-                      label: _priority.toString(),
-                      divisions: 10,
-                      value: _priority.toDouble(),
-                      onChanged: (value) {
-                        setState(() {
-                          _priority = value.toInt();
-                        });
-                      },
-                    )
-                  ),
-                  TextButton(
-                    child: Text(((compartmentModel == null)
-                        ? "Fach"
-                        : compartmentModel!.compartmentTitle)),
-                    onPressed: () async {
-                      await showDialog(
-                        context: context,
-                        builder: (context) => selectCompartmentDialog(),
-                      );
-                      setState(() {});
-                    },
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(Colors.grey.shade900),
-                    ),
-                  ),
+                      padding: EdgeInsets.all(PADDING),
+                      child: Slider(
+                        min: 1,
+                        max: 10,
+                        label: _priority.toString(),
+                        divisions: 10,
+                        value: _priority.toDouble(),
+                        onChanged: (value) {
+                          setState(() {
+                            _priority = value.toInt();
+                          });
+                        },
+                      )),
                 ],
               ),
             ),
-
+            TextButton(
+              child: Text(((compartmentModel == null)
+                  ? "Fach"
+                  : compartmentModel!.compartmentTitle)),
+              onPressed: () async {
+                await showDialog(
+                  context: context,
+                  builder: (context) => selectCompartmentDialog(),
+                );
+                setState(() {});
+              },
+              style: ButtonStyle(
+                backgroundColor:
+                MaterialStateProperty.all(Colors.grey.shade900),
+              ),
+            ),
             Padding(
               padding: EdgeInsets.all(PADDING),
               child: TextField(
@@ -175,17 +180,38 @@ class _NoteAddEditScreenState extends State<NoteAddEditScreen> {
     compartments = await DatabaseHelper.db.getAllCompartments();
   }
 
+  void addOrUpdateNoteModel() {
+    if (isAdd) {
+      print("ADD");
+      _saveNoteModel();
+    } else {
+      _updateNoteModel();
+    }
+    Navigator.of(context).pop();
+  }
+
   Future _saveNoteModel() async {
     //TODO: Die Notiz auch in Hive speichern
     currentModel ??= NoteModel(
-      priority: _priority,
-      note: _noteController.text,
-      title: _titleController.text,
-      date: Misc.getCurrentEpochMilli(),
-      compartmentModel: compartmentModel
-    );
+        priority: _priority,
+        note: _noteController.text,
+        title: _titleController.text,
+        date: Misc.getCurrentEpochMilli(),
+        compartmentModel: compartmentModel);
     int d = await DatabaseHelper.db.insertNote(currentModel!);
-    Navigator.of(context).pop();
+    print("inserted:$d");
+  }
+
+  Future _updateNoteModel() async {
+    int id = currentModel!.id!;
+    currentModel = NoteModel(
+        id: id,
+        title: _titleController.text,
+        note: _noteController.text,
+        priority: _priority,
+        date: Misc.getCurrentEpochMilli(),
+        compartmentModel: compartmentModel);
+    id = await DatabaseHelper.db.updateNote(currentModel!);
   }
 
   Future _deleteNoteModel() async {
@@ -200,34 +226,36 @@ class _NoteAddEditScreenState extends State<NoteAddEditScreen> {
   }
 
   Widget selectCompartmentDialog() => Card(
-    child: Column(children: [
-      Expanded(
-        child: ListView.builder(
-          itemCount: compartments.length,
-          shrinkWrap: true,
-          itemBuilder: (context, index) => TextButton(
-            child: Text(compartments[index].compartmentTitle, textAlign: TextAlign.center,),
-            onPressed: () {
-              compartmentModel = compartments[index];
-              Navigator.of(context).pop();
-            },
+        child: Column(children: [
+          Expanded(
+              child: ListView.builder(
+            itemCount: compartments.length,
+            shrinkWrap: true,
+            itemBuilder: (context, index) => TextButton(
+              child: Text(
+                compartments[index].compartmentTitle,
+                textAlign: TextAlign.center,
+              ),
+              onPressed: () {
+                compartmentModel = compartments[index];
+                Navigator.of(context).pop();
+              },
+              style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all(Colors.grey.shade900),
+              ),
+            ),
+          )),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text(
+              "Schließen",
+              style: TextStyle(color: Colors.red, fontSize: 18),
+            ),
             style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all(Colors.grey.shade900),
             ),
-            ),
-        )
-      ),
-      TextButton(
-        onPressed: () => Navigator.of(context).pop(),
-        child: const Text(
-          "Schließen",
-          style: TextStyle(color: Colors.red, fontSize: 18),
-        ),
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(Colors.grey.shade900),
-        ),
-      ),
-    ]),
-  );
-
+          ),
+        ]),
+      );
 }

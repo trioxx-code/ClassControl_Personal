@@ -6,7 +6,6 @@ import 'package:classcontrol_personal/Models/NoteModel.dart';
 import 'package:classcontrol_personal/Screens/NoteAddEditScreen.dart';
 import 'package:classcontrol_personal/Screens/NoteDetailScreen.dart';
 import 'package:classcontrol_personal/Util/Constants.dart';
-import 'package:classcontrol_personal/Util/Misc.dart';
 import 'package:classcontrol_personal/Widgets/NoteCardWidget.dart';
 import 'package:classcontrol_personal/util/SideBarDrawer.dart';
 import 'package:flutter/material.dart';
@@ -27,24 +26,11 @@ class _NotePageState extends State<NotePage> {
     "filterType": Constants.FILTER_ASC
   };
   bool isLoading = false;
-  //TODO: Popup für die Fächer auswahl.
 
   @override
   void initState() {
     super.initState();
-    //generateDebugData(); //@debug @cleanup @info: windows
     refresh(0);
-  }
-
-  void generateDebugData() {
-    for (int i = 1; i < 21; i++) {
-      notes.add(NoteModel(
-          title: "Test$i",
-          date: (Misc.getCurrentEpochMilli() + 3600 * 60 * i),
-          note: "kaqwdnawoidwa" + i.toString(),
-          priority: i % 5 * 2 % 7,
-          id: i));
-    }
   }
 
   Future refresh(int op) async {
@@ -60,6 +46,7 @@ class _NotePageState extends State<NotePage> {
         notes = await DatabaseHelper.db.getAllNotes(
             filterArgs: currentFilter["filterArg"] ?? "",
             filterType: currentFilter["filterType"] ?? "");
+        print(notes.length);
         break;
     }
     setState(() {
@@ -72,10 +59,14 @@ class _NotePageState extends State<NotePage> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute(
+        onPressed: () async {
+          print("START");
+          await Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => NoteAddEditScreen(),
           ));
+          print("ENDE");
+          await refresh(0);
+          print("REFRESH");
         },
       ),
       drawer: const SideDrawer(),
@@ -135,7 +126,7 @@ class _NotePageState extends State<NotePage> {
         trailing: IconButton(
           icon: const Icon(Icons.delete),
           onPressed: () =>
-              _deleteNote(notes[index]), //_deleteNote(notes[index]);
+              _deleteNote(notes[index]),
         ),
         onTap: () {
           Navigator.of(context).push(MaterialPageRoute(

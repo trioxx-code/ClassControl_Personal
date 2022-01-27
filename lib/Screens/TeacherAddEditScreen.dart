@@ -94,7 +94,7 @@ class _TeacherAddEditScreenState extends State<TeacherAddEditScreen> {
     _teacherController = TextEditingController(text: name);
     if (getTitle() == Constants.SCREEN_ADD) {
       isAdd = true;
-      icon = const Icon(Icons.add);
+      icon = const Icon(Icons.check);
     } else {
       icon = const Icon(Icons.edit);
     }

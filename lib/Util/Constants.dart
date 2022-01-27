@@ -39,6 +39,7 @@ class Constants {
   static const SCREEN_EDIT = "Bearbeiten";
 
   static const NO_DATA = "Noch keine Einträge vorhanden";
+  static const DATABASE_NO_COMPARTMENT_DATA = "Fach nicht zugewiesen";
 
   //@info: SQL Boilerplate
   static const SQL_CREATE = "CREATE TABLE";

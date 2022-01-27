@@ -28,7 +28,7 @@ class Misc {
   ];
 
   static Widget alignedItem(Alignment alignement, String text, Color textColor,
-      {double? padding}) {
+      {double? padding, double? fontSize}) {
     return Expanded(
       child: Padding(
         padding: EdgeInsets.all(padding ?? 8.0),
@@ -36,7 +36,7 @@ class Misc {
           alignment: alignement,
           child: Text(
             text,
-            style: TextStyle(color: textColor),
+            style: TextStyle(color: textColor, fontSize: fontSize ?? 14.0),
           ),
         ),
       ),

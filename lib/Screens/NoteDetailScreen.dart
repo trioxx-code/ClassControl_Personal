@@ -21,12 +21,16 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
   final double _padding = 20.0;
   late TextEditingController _noteController;
   String _dateString = "";
+  bool _showCompartment = false;
 
   @override
   void initState() {
     super.initState();
     _noteController = TextEditingController(text: widget.noteModel.note);
     _dateString = Misc.convertEpochToString(widget.noteModel.date);
+    if(widget.noteModel.compartmentModel != null) {
+      _showCompartment = widget.noteModel.compartmentModel!.compartmentId != 1 ? true : false;
+    }
   }
 
   @override
@@ -67,12 +71,21 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
         child: Column(children: [
           Row(children: [
             Misc.alignedItem(Alignment.centerLeft,
-                "Erstell-Datum: " + _dateString, Colors.white),
+                "Erstell-Datum: " + _dateString, Colors.white,
+                fontSize: 18),
             Misc.alignedItem(
                 Alignment.centerRight,
                 "Priorität: " + widget.noteModel.priority.toString(),
-                Colors.white),
+                Colors.white,
+                fontSize: 18),
           ]),
+          (_showCompartment)
+              ? Text(
+                  "Fach: " +
+                      widget.noteModel.compartmentModel!.compartmentTitle,
+                  style: const TextStyle(color: Colors.white, fontSize: 18.0),
+                )
+              : Container(), //@info: keep empty
           Padding(
             padding: EdgeInsets.all(_padding),
             child: TextField(
