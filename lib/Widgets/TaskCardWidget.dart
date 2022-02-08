@@ -2,15 +2,15 @@
  * Copyright (c) 2022. ClassControl Personal by trioxx
  */
 
-import 'package:classcontrol_personal/Models/NoteModel.dart';
+import 'package:classcontrol_personal/Models/TaskModel.dart';
 import 'package:classcontrol_personal/Util/Misc.dart';
 import 'package:flutter/material.dart';
 
-class NoteCardWidget extends StatelessWidget {
-  const NoteCardWidget({Key? key, required this.noteModel, required this.index})
+class TaskCardWidget extends StatelessWidget {
+  const TaskCardWidget({Key? key, required this.taskModel, required this.index})
       : super(key: key);
 
-  final NoteModel noteModel;
+  final TaskModel taskModel;
   final int index;
 
   @override
@@ -28,15 +28,24 @@ class NoteCardWidget extends StatelessWidget {
                   children: <Widget>[
                     Misc.alignedTextItem(
                         Alignment.centerLeft,
-                        Misc.convertEpochToString(noteModel.date),
+                        Misc.convertEpochToString(taskModel.taskDateTime),
                         Colors.grey.shade700),
-                    Misc.alignedTextItem(Alignment.centerRight,
-                        noteModel.priority.toString(), Colors.grey.shade700),
+                    Misc.alignedIconItem(
+                        Alignment.center,
+                        //taskModel.isChecked? "Erledigt" : "Unerledigt",
+                        taskModel.isChecked
+                            ? Icons.verified_rounded
+                            : Icons.warning_amber_rounded,
+                        Colors.black),
+                    Misc.alignedTextItem(
+                        Alignment.centerRight,
+                        taskModel.taskPriority.toString(),
+                        Colors.grey.shade700),
                   ],
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  noteModel.title,
+                  taskModel.taskTitle,
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: 20,

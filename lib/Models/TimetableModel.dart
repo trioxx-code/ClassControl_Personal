@@ -10,6 +10,8 @@ class TimetableModel {
   final String weekday;
   final String time;
 
+  //TODO: CompartmentModel implementieren
+
   TimetableModel(
       {this.id,
       required this.title,

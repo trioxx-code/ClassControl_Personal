@@ -1,41 +1,38 @@
 /*
- * Copyright (c) 2021. ClassControl Personal by trioxx
+ * Copyright (c) 2022. ClassControl Personal by trioxx
  */
 
 import 'package:classcontrol_personal/Database/DatabaseHelper.dart';
-import 'package:classcontrol_personal/Models/NoteModel.dart';
-import 'package:classcontrol_personal/Screens/NoteAddEditScreen.dart';
+import 'package:classcontrol_personal/Models/TaskModel.dart';
+import 'package:classcontrol_personal/Screens/TaskAddEditScreen.dart';
+import 'package:classcontrol_personal/Util/Constants.dart';
 import 'package:classcontrol_personal/Util/Misc.dart';
 import 'package:flutter/material.dart';
 
-class NoteDetailScreen extends StatefulWidget {
-  NoteModel noteModel;
+class TaskDetailScreen extends StatefulWidget {
+  final TaskModel taskModel;
+
+  const TaskDetailScreen({required this.taskModel, Key? key}) : super(key: key);
 
   @override
-  _NoteDetailScreenState createState() => _NoteDetailScreenState();
-
-  NoteDetailScreen({Key? key, required this.noteModel}) : super(key: key);
+  _TaskDetailScreenState createState() => _TaskDetailScreenState();
 }
 
-class _NoteDetailScreenState extends State<NoteDetailScreen> {
+class _TaskDetailScreenState extends State<TaskDetailScreen> {
   final double _padding = 20.0;
-  late TextEditingController _noteController;
+  late TextEditingController _descController;
   String _dateString = "";
-  bool _showCompartment = false;
 
   @override
   void initState() {
     super.initState();
-    _noteController = TextEditingController(text: widget.noteModel.note);
-    _dateString = Misc.convertEpochToString(widget.noteModel.date);
-    if(widget.noteModel.compartmentModel != null) {
-      _showCompartment = widget.noteModel.compartmentModel!.compartmentId != 1 ? true : false;
-    }
+    _descController = TextEditingController(text: widget.taskModel.taskDesc);
+    _dateString = Misc.convertEpochToString(widget.taskModel.taskDateTime);
   }
 
   @override
   void dispose() {
-    _noteController.dispose();
+    _descController.dispose();
     super.dispose();
   }
 
@@ -43,12 +40,12 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.noteModel.title),
+        title: Text(widget.taskModel.taskTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete),
             onPressed: () async {
-              await _deleteNoteModel();
+              await _deleteTaskModel();
               Navigator.of(context).pop();
             },
           ),
@@ -59,8 +56,8 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
             icon: const Icon(Icons.edit),
             onPressed: () async {
               await Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => NoteAddEditScreen(
-                  model: widget.noteModel,
+                builder: (context) => TaskAddEditScreen(
+                  taskModel: widget.taskModel,
                 ),
               ));
             },
@@ -75,21 +72,29 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
                 fontSize: 18),
             Misc.alignedTextItem(
                 Alignment.centerRight,
-                "Priorität: " + widget.noteModel.priority.toString(),
+                "Priorität: " + widget.taskModel.taskPriority.toString(),
                 Colors.white,
                 fontSize: 18),
           ]),
-          (_showCompartment)
-              ? Text(
-                  "Fach: " +
-                      widget.noteModel.compartmentModel!.compartmentTitle,
-                  style: const TextStyle(color: Colors.white, fontSize: 18.0),
+          Row(
+            children: [
+              Padding(
+                padding: EdgeInsets.all(_padding),
+                child: const Text("Erledigt? "),
+              ),
+              Checkbox(
+                value: widget.taskModel.isChecked, onChanged: (value) {}
                 )
-              : Container(), //@info: keep empty
+            ],
+          ),
+          Text(
+            "Fach: " + widget.taskModel.taskCompartment.compartmentTitle,
+            style: const TextStyle(color: Colors.white, fontSize: 18.0),
+          ),
           Padding(
             padding: EdgeInsets.all(_padding),
             child: TextField(
-                controller: _noteController,
+                controller: _descController,
                 readOnly: true,
                 style: const TextStyle(fontSize: 16),
                 maxLines: 10,
@@ -102,12 +107,10 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
                   border: OutlineInputBorder(
                     borderSide:
                         BorderSide(color: Colors.blue.shade50, width: 2.0),
-                    //borderRadius: BorderRadius.circular(25.0),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide:
                         BorderSide(color: Colors.blue.shade50, width: 2.0),
-                    //borderRadius: BorderRadius.circular(25.0),
                   ),
                 )),
           )
@@ -116,7 +119,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
     );
   }
 
-  Future _deleteNoteModel() async {
-    await DatabaseHelper.db.deleteNote(widget.noteModel);
+  Future _deleteTaskModel() async {
+    await DatabaseHelper.db.deleteTask(widget.taskModel);
   }
 }

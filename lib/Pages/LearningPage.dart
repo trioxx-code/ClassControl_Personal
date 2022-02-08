@@ -16,9 +16,9 @@ class _LearningPageState extends State<LearningPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: SideDrawer(),
+      drawer: const SideDrawer(),
       appBar: AppBar(
-        title: Text(Constants.PT_LEARNING),
+        title: const Text(Constants.PT_LEARNING),
       ),
       body: Container(),
     );

@@ -60,13 +60,10 @@ class _NotePageState extends State<NotePage> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () async {
-          print("START");
           await Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => NoteAddEditScreen(),
           ));
-          print("ENDE");
           await refresh(0);
-          print("REFRESH");
         },
       ),
       drawer: const SideDrawer(),

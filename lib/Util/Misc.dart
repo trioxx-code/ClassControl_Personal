@@ -27,7 +27,8 @@ class Misc {
     Colors.tealAccent.shade100,
   ];
 
-  static Widget alignedItem(Alignment alignement, String text, Color textColor,
+  static Widget alignedTextItem(
+      Alignment alignement, String text, Color textColor,
       {double? padding, double? fontSize}) {
     return Expanded(
       child: Padding(
@@ -38,6 +39,22 @@ class Misc {
             text,
             style: TextStyle(color: textColor, fontSize: fontSize ?? 14.0),
           ),
+        ),
+      ),
+    );
+  }
+
+  static Widget alignedIconItem(Alignment alignment, IconData icon, Color color,
+      {double? padding}) {
+    return Expanded(
+      child: Padding(
+        padding: EdgeInsets.all(padding ?? 8.0),
+        child: Align(
+          child: Icon(
+            icon,
+            color: color,
+          ),
+          alignment: alignment,
         ),
       ),
     );

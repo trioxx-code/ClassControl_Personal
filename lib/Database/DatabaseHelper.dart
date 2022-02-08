@@ -411,6 +411,22 @@ class DatabaseHelper {
     return tasks;
   }
 
+  Future<int> insertTask(TaskModel taskModel) async {
+    final d = await db.database;
+    return await d.insert(_tableTask, taskModel.toMap());
+  }
+
+  Future<int> updateTask(TaskModel taskModel) async {
+    final d = await db.database;
+    return await d.update(_tableTask, taskModel.toMap(), where: "$taskId = ?",whereArgs: [taskModel.taskId]);
+  }
+
+  Future<int> deleteTask(TaskModel taskModel) async {
+    final d = await db.database;
+    return await d.delete(_tableTask, where: "$taskId = ?", whereArgs: [taskModel.taskId]);
+  }
+
+
   //TODO: SQL-Vervollständigen
   Future<List<PerformanceModel>> getAllPerformances() async {
     final d = await db.database;
