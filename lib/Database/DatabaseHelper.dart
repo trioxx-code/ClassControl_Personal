@@ -215,7 +215,6 @@ class DatabaseHelper {
   Future<int> insertTeacher(String name) async {
     final d = await db.database;
     int res = 0;
-    //TODO: Eintrag hinzufügen.
     res = await d.insert(_tableTeacher, {teacherName: name});
     return res;
   }
@@ -389,7 +388,6 @@ class DatabaseHelper {
     return appointments;
   }
 
-  //TODO: SQL-Vervollständigen
   Future<List<TaskModel>> getAllTasks() async {
     final d = await db.database;
     List<TaskModel> tasks = [];
@@ -418,14 +416,15 @@ class DatabaseHelper {
 
   Future<int> updateTask(TaskModel taskModel) async {
     final d = await db.database;
-    return await d.update(_tableTask, taskModel.toMap(), where: "$taskId = ?",whereArgs: [taskModel.taskId]);
+    return await d.update(_tableTask, taskModel.toMap(),
+        where: "$taskId = ?", whereArgs: [taskModel.taskId]);
   }
 
   Future<int> deleteTask(TaskModel taskModel) async {
     final d = await db.database;
-    return await d.delete(_tableTask, where: "$taskId = ?", whereArgs: [taskModel.taskId]);
+    return await d.delete(_tableTask,
+        where: "$taskId = ?", whereArgs: [taskModel.taskId]);
   }
-
 
   //TODO: SQL-Vervollständigen
   Future<List<PerformanceModel>> getAllPerformances() async {
@@ -446,7 +445,6 @@ class DatabaseHelper {
     return perfomances;
   }
 
-  //TODO: SQL-Vervollstädigen
   Future<List<LearningStackModel>> getAllLearningStacks() async {
     final d = await db.database;
     List<LearningStackModel> stacks = [];
@@ -458,7 +456,47 @@ class DatabaseHelper {
     return stacks;
   }
 
-  //TODO: SQL-Vervollständigen
+  Future<int> insertLearningStackModel(String title) async {
+    final d = await db.database;
+    return await d.insert(_tableLearningStack, {learningStackTitle: title});
+  }
+
+  Future<int> updateLearningStackModel(
+      LearningStackModel learningStackModel) async {
+    final d = await db.database;
+    return await d.update(_tableLearningStack, learningStackModel.toMap(),
+        where: "$learningStackId = ?", whereArgs: [learningStackModel.id]);
+  }
+
+  Future<int> deleteLearningStackModel(
+      LearningStackModel learningStackModel) async {
+    final d = await db.database;
+    await d.delete(_tableLearningItem,
+        where: "$learningItemStackId = ?", whereArgs: [learningStackModel.id]);
+    return await d.delete(_tableLearningStack,
+        where: "$learningStackId = ?", whereArgs: [learningStackModel.id]);
+  }
+
+  Future<int> insertLearningItemModel(String content) async {
+    final d = await db.database;
+    return await d.insert(_tableLearningItem, {learningItemContent: content});
+  }
+
+  Future<int> updateLearningItemModel(
+      LearningItemModel learningStackModel) async {
+    final d = await db.database;
+    return await d.update(_tableLearningStack, learningStackModel.toMap(),
+        where: "$learningStackId = ?", whereArgs: [learningStackModel.id]);
+  }
+
+  //TODO: Evtl. AND dranpacken für stackId
+  Future<int> deleteLearningItemModel(
+      LearningItemModel learningStackModel) async {
+    final d = await db.database;
+    return await d.delete(_tableLearningItem,
+        where: "$learningItemId = ?", whereArgs: [learningStackModel.id]);
+  }
+
   Future<List<LearningItemModel>> getAllLearningItemsByStack(
       LearningStackModel stack) async {
     final d = await db.database;

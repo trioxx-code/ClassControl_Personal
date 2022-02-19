@@ -29,7 +29,10 @@ class Misc {
 
   static Widget alignedTextItem(
       Alignment alignement, String text, Color textColor,
-      {double? padding, double? fontSize}) {
+      {double? padding,
+      double? fontSize,
+      FontWeight? fontWeight,
+      TextDecoration? textDecoration}) {
     return Expanded(
       child: Padding(
         padding: EdgeInsets.all(padding ?? 8.0),
@@ -37,7 +40,11 @@ class Misc {
           alignment: alignement,
           child: Text(
             text,
-            style: TextStyle(color: textColor, fontSize: fontSize ?? 14.0),
+            style: TextStyle(
+                color: textColor,
+                fontSize: fontSize ?? 14.0,
+                fontWeight: fontWeight,
+                decoration: textDecoration),
           ),
         ),
       ),
@@ -55,6 +62,35 @@ class Misc {
             color: color,
           ),
           alignment: alignment,
+        ),
+      ),
+    );
+  }
+
+  static Widget alignedTextButtonItem(
+      Alignment alignement, String text, Color textColor, onPressed,
+      {double? padding,
+      double? fontSize,
+      FontWeight? fontWeight,
+      TextDecoration? textDecoration,
+      ButtonStyle? buttonStyle}) {
+    return Expanded(
+      child: Padding(
+        padding: EdgeInsets.all(padding ?? 8.0),
+        child: Align(
+          alignment: alignement,
+          child: TextButton(
+            style: buttonStyle,
+            onPressed: onPressed,
+            child: Text(
+              text,
+              style: TextStyle(
+                  color: textColor,
+                  fontSize: fontSize ?? 14.0,
+                  fontWeight: fontWeight,
+                  decoration: textDecoration),
+            ),
+          ),
         ),
       ),
     );

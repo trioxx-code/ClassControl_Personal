@@ -16,9 +16,9 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: SideDrawer(),
+      drawer: const SideDrawer(),
       appBar: AppBar(
-        title: Text(Constants.PT_DASHBOARD),
+        title: const Text(Constants.PT_DASHBOARD),
       ),
       body: SingleChildScrollView(
         child: Column(

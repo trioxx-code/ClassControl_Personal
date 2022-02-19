@@ -39,7 +39,7 @@ class SideDrawer extends StatelessWidget {
               title: const Text(Constants.PT_DASHBOARD),
               onTap: () async {
                 await Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => DashboardPage(),
+                  builder: (context) => const DashboardPage(),
                 ));
               },
             ),
@@ -48,7 +48,7 @@ class SideDrawer extends StatelessWidget {
               title: const Text(Constants.PT_TIMETABLE),
               onTap: () async {
                 await Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => TimetablePage(),
+                  builder: (context) => const TimetablePage(),
                 ));
               },
             ),
@@ -57,7 +57,7 @@ class SideDrawer extends StatelessWidget {
               title: const Text(Constants.PT_CALENDAR),
               onTap: () async {
                 await Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => CalendarPage(),
+                  builder: (context) => const CalendarPage(),
                 ));
               },
             ),
@@ -66,7 +66,7 @@ class SideDrawer extends StatelessWidget {
               title: const Text(Constants.PT_TASK),
               onTap: () async {
                 await Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => TaskPage(),
+                  builder: (context) => const TaskPage(),
                 ));
               },
             ),
@@ -75,7 +75,7 @@ class SideDrawer extends StatelessWidget {
               title: const Text(Constants.PT_NOTE),
               onTap: () async {
                 await Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => NotePage(),
+                  builder: (context) => const NotePage(),
                 ));
               },
             ),
@@ -84,7 +84,7 @@ class SideDrawer extends StatelessWidget {
               title: const Text(Constants.PT_LEARNING),
               onTap: () async {
                 await Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => LearningPage(),
+                  builder: (context) => const LearningPage(),
                 ));
               },
             ),
@@ -93,7 +93,7 @@ class SideDrawer extends StatelessWidget {
               title: const Text(Constants.PT_WEB),
               onTap: () async {
                 await Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => WebPage(),
+                  builder: (context) => const WebPage(),
                 ));
               },
             ),
@@ -102,7 +102,7 @@ class SideDrawer extends StatelessWidget {
               title: const Text(Constants.PT_PERFORMANCE),
               onTap: () async {
                 await Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => PerformancePage(),
+                  builder: (context) => const PerformancePage(),
                 ));
               },
             ),
@@ -111,7 +111,7 @@ class SideDrawer extends StatelessWidget {
               title: const Text(Constants.PT_SETTINGS),
               onTap: () async {
                 await Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => SettingsPage(),
+                  builder: (context) => const SettingsPage(),
                 ));
               },
             ),
