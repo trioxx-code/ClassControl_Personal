@@ -3,9 +3,8 @@
  */
 
 import 'package:classcontrol_personal/Database/DatabaseHelper.dart';
-import 'package:classcontrol_personal/Models/TaskModel.dart';
-import 'package:classcontrol_personal/Screens/TaskAddEditScreen.dart';
-import 'package:classcontrol_personal/Util/Constants.dart';
+import 'TaskModel.dart';
+import 'TaskAddEditScreen.dart';
 import 'package:classcontrol_personal/Util/Misc.dart';
 import 'package:flutter/material.dart';
 

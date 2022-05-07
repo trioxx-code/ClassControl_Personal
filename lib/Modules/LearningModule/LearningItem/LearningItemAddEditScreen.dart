@@ -3,8 +3,8 @@
  */
 
 import 'package:classcontrol_personal/Database/DatabaseHelper.dart';
-import 'package:classcontrol_personal/Models/LearningItemModel.dart';
-import 'package:classcontrol_personal/Models/LearningStackModel.dart';
+import 'LearningItemModel.dart';
+import '../LearningStack/LearningStackModel.dart';
 import 'package:classcontrol_personal/Util/Constants.dart';
 import 'package:flutter/material.dart';
 
@@ -111,6 +111,7 @@ class _LearningItemAddEditScreenState extends State<LearningItemAddEditScreen> {
   }
 
   void addOrUpdateLearningItemModel() {
+    print("addOrUpdate:$isAdd");
     if (isAdd) {
       _insertLearningItemModel();
     } else {
@@ -123,8 +124,7 @@ class _LearningItemAddEditScreenState extends State<LearningItemAddEditScreen> {
     currentModel ??= LearningItemModel(
         content: _learningItemContentController.text,
         stackId: widget.learningStackModel.id!);
-    int d =
-        await DatabaseHelper.db.insertLearningItemModel(currentModel!.content);
+    await DatabaseHelper.db.insertLearningItemModel(currentModel!.content, widget.learningStackModel.id);
   }
 
   Future _updateLearningItemModel() async {
@@ -135,12 +135,11 @@ class _LearningItemAddEditScreenState extends State<LearningItemAddEditScreen> {
           content: _learningItemContentController.text,
           stackId: widget.learningStackModel.id!);
       await DatabaseHelper.db.updateLearningItemModel(currentModel!);
-    } else
-      print("ERROR: updateLearningItemModel"); //@debug @cleanup
+    }
   }
 
   Future _deleteLearningStackModel() async {
-    int d = await DatabaseHelper.db.deleteLearningItemModel(currentModel!);
+    await DatabaseHelper.db.deleteLearningItemModel(currentModel!);
     Navigator.of(context).pop();
   }
 }

@@ -3,8 +3,8 @@
  */
 
 import 'package:classcontrol_personal/Database/DatabaseHelper.dart';
-import 'package:classcontrol_personal/Models/TeacherModel.dart';
-import 'package:classcontrol_personal/Screens/TeacherAddEditScreen.dart';
+import 'TeacherModel.dart';
+import 'TeacherAddEditScreen.dart';
 import 'package:classcontrol_personal/Util/Constants.dart';
 import 'package:flutter/material.dart';
 

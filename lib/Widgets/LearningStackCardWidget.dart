@@ -2,7 +2,7 @@
  * Copyright (c) 2022. ClassControl Personal by trioxx
  */
 
-import 'package:classcontrol_personal/Models/LearningStackModel.dart';
+import '../Modules/LearningModule/LearningStack/LearningStackModel.dart';
 import 'package:classcontrol_personal/Util/Misc.dart';
 import 'package:flutter/material.dart';
 
@@ -34,7 +34,7 @@ class LearningStackCardWidget extends StatelessWidget {
                         learningStackModel.title, Colors.black,
                         fontSize: 20, fontWeight: FontWeight.bold),
                     Misc.alignedTextButtonItem(Alignment.centerRight,
-                        "Items anzeigen", Colors.white, onPressed,
+                        "Items", Colors.white, onPressed,
                         fontSize: 20,
                         buttonStyle: ButtonStyle(
                             backgroundColor:

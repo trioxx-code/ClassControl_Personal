@@ -3,7 +3,7 @@
  */ // ignore_for_file: file_names
 
 import 'package:classcontrol_personal/Database/DatabaseHelper.dart';
-import 'package:classcontrol_personal/Models/CompartmentModel.dart';
+import '../CompartmentModule/CompartmentModel.dart';
 
 class TaskModel {
   int? taskId;
@@ -15,7 +15,7 @@ class TaskModel {
   final CompartmentModel taskCompartment;
 
   TaskModel(
-      {taskId,
+      {this.taskId,
       required this.taskTitle,
       required this.taskDesc,
       required this.taskDateTime,
@@ -56,7 +56,7 @@ class TaskModel {
         DatabaseHelper.taskDesc: taskDesc,
         DatabaseHelper.taskDateTime: taskDateTime,
         DatabaseHelper.taskPriority: taskPriority,
-        DatabaseHelper.taskIsChecked: isChecked,
-        DatabaseHelper.taskCompartment: taskCompartment
+        DatabaseHelper.taskIsChecked: ((isChecked)? 1 : 0),
+        DatabaseHelper.taskCompartment: taskCompartment.compartmentId
       };
 }

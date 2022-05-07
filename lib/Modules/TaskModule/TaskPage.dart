@@ -2,9 +2,9 @@
  * Copyright (c) 2021. ClassControl Personal by trioxx
  */ // ignore_for_file: file_names
 import 'package:classcontrol_personal/Database/DatabaseHelper.dart';
-import 'package:classcontrol_personal/Models/TaskModel.dart';
-import 'package:classcontrol_personal/Screens/TaskAddEditScreen.dart';
-import 'package:classcontrol_personal/Screens/TaskDetailScreen.dart';
+import 'TaskModel.dart';
+import 'TaskAddEditScreen.dart';
+import 'TaskDetailScreen.dart';
 import 'package:classcontrol_personal/Widgets/TaskCardWidget.dart';
 import 'package:classcontrol_personal/util/Constants.dart';
 import 'package:classcontrol_personal/util/SideBarDrawer.dart';
@@ -31,6 +31,15 @@ class _TaskPageState extends State<TaskPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         drawer: const SideDrawer(),
+        floatingActionButton: FloatingActionButton(
+          child: const Icon(Icons.add),
+          onPressed: () async {
+            await Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => TaskAddEditScreen(),
+            ));
+            refresh();
+          },
+        ),
         appBar: AppBar(
           title: const Text(Constants.PT_TASK),
         ),

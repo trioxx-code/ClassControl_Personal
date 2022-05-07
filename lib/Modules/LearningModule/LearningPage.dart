@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2021. ClassControl Personal by trioxx
+ * Copyright (c) 2022. ClassControl Personal by trioxx
  */ // ignore_for_file: file_names
 import 'package:classcontrol_personal/Database/DatabaseHelper.dart';
-import 'package:classcontrol_personal/Models/LearningStackModel.dart';
-import 'package:classcontrol_personal/Pages/LearningItemPage.dart';
-import 'package:classcontrol_personal/Screens/LearningStackAddEditScreen.dart';
-import 'package:classcontrol_personal/Screens/LearningStackDetailScreen.dart';
+import 'LearningStack/LearningStackModel.dart';
+import 'LearningItem/LearningItemPage.dart';
+import 'LearningStack/LearningStackAddEditScreen.dart';
+import 'LearningStack/LearningStackDetailScreen.dart';
 import 'package:classcontrol_personal/Widgets/LearningStackCardWidget.dart';
 import 'package:classcontrol_personal/util/Constants.dart';
 import 'package:classcontrol_personal/util/SideBarDrawer.dart';
@@ -33,10 +33,27 @@ class _LearningPageState extends State<LearningPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const SideDrawer(),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () async {
+          await Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => LearningStackAddEditScreen(),
+          ));
+          await refresh();
+        },
+      ),
       appBar: AppBar(
         title: const Text(Constants.PT_LEARNING),
       ),
-      body: SingleChildScrollView(
+      body: Center(
+        child: isLoading
+            ? const CircularProgressIndicator()
+            : stacks.isEmpty
+            ? const Text(Constants.NO_DATA,
+            style: TextStyle(color: Colors.white, fontSize: 24))
+            : buildStacks(),
+      ));
+    /*SingleChildScrollView(
         child: Center(
             child: isLoading
                 ? const CircularProgressIndicator()
@@ -45,7 +62,7 @@ class _LearningPageState extends State<LearningPage> {
                         style: TextStyle(color: Colors.white, fontSize: 24))
                     : buildStacks()),
       ),
-    );
+    );*/
   }
 
   Widget buildStacks() {
@@ -53,8 +70,8 @@ class _LearningPageState extends State<LearningPage> {
         itemCount: stacks.length,
         itemBuilder: (context, index) => ListTile(
               title: LearningStackCardWidget(
-                learningStackModel: stacks[0],
-                index: 1,
+                learningStackModel: stacks[index],
+                index: index,
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) =>
@@ -64,16 +81,16 @@ class _LearningPageState extends State<LearningPage> {
               ),
               trailing: IconButton(
                 icon: const Icon(Icons.delete),
-                onPressed: () => _deleteStack(stacks[0]),
+                onPressed: () => _deleteStack(stacks[index]),
               ),
               leading: IconButton(
                 icon: const Icon(Icons.edit),
-                onPressed: () => _editStack(stacks[0]),
+                onPressed: () => _editStack(stacks[index]),
               ),
               onTap: () async {
                 await Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => LearningStackDetailScreen(
-                    learningStackModel: stacks[0],
+                    learningStackModel: stacks[index],
                   ),
                 ));
                 refresh();

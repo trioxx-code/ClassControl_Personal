@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 2021. ClassControl Personal by trioxx
+ * Copyright (c) 2022. ClassControl Personal by trioxx
  */ // ignore_for_file: file_names
 import 'package:classcontrol_personal/Database/DatabaseHelper.dart';
-import 'package:classcontrol_personal/Models/TeacherModel.dart';
-import 'package:classcontrol_personal/Screens/TeacherAddEditScreen.dart';
-import 'package:classcontrol_personal/Screens/TeacherDetailScreen.dart';
+import 'TeacherModel.dart';
+import 'TeacherAddEditScreen.dart';
+import 'TeacherDetailScreen.dart';
 import 'package:classcontrol_personal/Util/Constants.dart';
 import 'package:flutter/material.dart';
 

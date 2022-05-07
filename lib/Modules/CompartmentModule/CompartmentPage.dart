@@ -3,9 +3,9 @@
  */
 
 import 'package:classcontrol_personal/Database/DatabaseHelper.dart';
-import 'package:classcontrol_personal/Models/CompartmentModel.dart';
-import 'package:classcontrol_personal/Screens/CompartmentAddEditScreen.dart';
-import 'package:classcontrol_personal/Screens/CompartmentDetailScreen.dart';
+import 'CompartmentModel.dart';
+import 'CompartmentAddEditScreen.dart';
+import 'CompartmentDetailScreen.dart';
 import 'package:classcontrol_personal/Util/Constants.dart';
 import 'package:flutter/material.dart';
 

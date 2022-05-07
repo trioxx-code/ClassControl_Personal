@@ -3,8 +3,8 @@
  */
 
 import 'package:classcontrol_personal/Database/DatabaseHelper.dart';
-import 'package:classcontrol_personal/Models/NoteModel.dart';
-import 'package:classcontrol_personal/Screens/NoteAddEditScreen.dart';
+import 'NoteModel.dart';
+import 'NoteAddEditScreen.dart';
 import 'package:classcontrol_personal/Util/Misc.dart';
 import 'package:flutter/material.dart';
 

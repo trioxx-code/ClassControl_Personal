@@ -18,11 +18,11 @@ class _WebPageState extends State<WebPage> {
     super.initState();
     //TODO: SharedPreferences verwenden um URL zu bekommen
   }
-
+//@info: https://pub.dev/packages/webview_flutter
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: SideDrawer(),
+      drawer: const SideDrawer(),
       appBar: AppBar(
         title: const Text(Constants.PT_WEB),
         actions: [

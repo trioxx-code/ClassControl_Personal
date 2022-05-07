@@ -12,13 +12,15 @@ class TimetablePage extends StatefulWidget {
   _TimetablePageState createState() => _TimetablePageState();
 }
 
+//TODO: Switch viewing between month, day and week
+
 class _TimetablePageState extends State<TimetablePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: SideDrawer(),
+      drawer: const SideDrawer(),
       appBar: AppBar(
-        title: Text(Constants.PT_TIMETABLE),
+        title: const Text(Constants.PT_TIMETABLE),
       ),
       body: Container(),
     );

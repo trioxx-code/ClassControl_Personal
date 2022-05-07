@@ -2,7 +2,7 @@
  * Copyright (c) 2022. ClassControl Personal by trioxx
  */
 
-import 'package:classcontrol_personal/Models/NoteModel.dart';
+import '../Modules/NoteModule/NoteModel.dart';
 import 'package:classcontrol_personal/Util/Misc.dart';
 import 'package:flutter/material.dart';
 

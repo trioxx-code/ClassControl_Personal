@@ -3,7 +3,7 @@
  */ // ignore_for_file: file_names
 
 import 'package:classcontrol_personal/Database/DatabaseHelper.dart';
-import 'package:classcontrol_personal/Models/CompartmentModel.dart';
+import '../CompartmentModule/CompartmentModel.dart';
 
 class PerformanceModel {
   int? id;

@@ -3,8 +3,9 @@
  */
 
 import 'package:classcontrol_personal/Database/DatabaseHelper.dart';
-import 'package:classcontrol_personal/Models/CompartmentModel.dart';
-import 'package:classcontrol_personal/Models/TaskModel.dart';
+import '../CompartmentModule/CompartmentModel.dart';
+import 'TaskModel.dart';
+import 'TaskPage.dart';
 import 'package:classcontrol_personal/Util/Constants.dart';
 import 'package:classcontrol_personal/Util/Misc.dart';
 import 'package:flutter/material.dart';
@@ -29,16 +30,18 @@ class _TaskAddEditScreenState extends State<TaskAddEditScreen> {
   int _priority = 1;
   bool isAdd = false;
   bool _isChecked = false;
+  String userInfo = "";
   List<CompartmentModel> compartments = [];
 
   @override
   void initState() {
     super.initState();
     if (getTitle() == Constants.SCREEN_ADD) {
-      isAdd = true;
       icon = const Icon(Icons.check);
+      isAdd = true;
     } else {
       icon = const Icon(Icons.edit);
+      isAdd = false;
     }
     currentModel = widget.taskModel;
     init();
@@ -75,6 +78,20 @@ class _TaskAddEditScreenState extends State<TaskAddEditScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            Visibility(
+              visible: (userInfo.isEmpty) ? true : false,
+              child: Padding(
+                padding: EdgeInsets.all(PADDING),
+                child: Text(
+                  userInfo,
+                  style: const TextStyle(
+                    color: Colors.red,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ),
             Padding(
               padding: EdgeInsets.all(PADDING),
               child: TextField(
@@ -130,15 +147,19 @@ class _TaskAddEditScreenState extends State<TaskAddEditScreen> {
                   child: const Text("Erledigt? "),
                 ),
                 Checkbox(
-                    value: _isChecked, onChanged: (value) {
-                      setState(() {
-                        _isChecked = value!;
-                      });
-                    },)
+                  value: _isChecked,
+                  onChanged: (value) {
+                    setState(() {
+                      _isChecked = value!;
+                    });
+                  },
+                )
               ],
             ),
             TextButton(
-              child: Text((_compartmentModel.compartmentTitle)),
+              child: Text(((currentModel == null)
+                  ? "Fach"
+                  : _compartmentModel.compartmentTitle)),
               onPressed: () async {
                 await showDialog(
                   context: context,
@@ -189,25 +210,37 @@ class _TaskAddEditScreenState extends State<TaskAddEditScreen> {
       _priority = currentModel!.taskPriority;
       _isChecked = currentModel!.isChecked;
       _compartmentModel = currentModel!.taskCompartment;
-    }
+    } else
+      _compartmentModel  = DatabaseHelper.db.getNoDataCompartmentModel(); //@debug
     _titleController = TextEditingController(text: data[0]);
     _descController = TextEditingController(text: data[0]);
     compartments = await DatabaseHelper.db.getAllCompartments();
   }
 
   String getTitle() {
-    String res =
-        ((currentModel == null) ? Constants.SCREEN_ADD : Constants.SCREEN_EDIT);
+    String res = ((widget.taskModel == null)
+        ? Constants.SCREEN_ADD
+        : Constants.SCREEN_EDIT);
     return res;
   }
 
   void addOrUpdateTaskModel() {
     if (isAdd) {
-      _insertTaskModel();
+      print(_compartmentModel.compartmentId);
+      if (_compartmentModel.compartmentId != null) {
+        _insertTaskModel();
+      } else {
+        setState(() {
+          userInfo = "Fach auswählen!";
+        });
+      }
     } else {
       _updateTaskModel();
     }
-    Navigator.of(context).pop();
+    //Navigator.of(context).pop();
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
+      builder: (context) => const TaskPage(),
+    ));
   }
 
   Future _insertTaskModel() async {
@@ -217,9 +250,9 @@ class _TaskAddEditScreenState extends State<TaskAddEditScreen> {
       taskDateTime: Misc.getCurrentEpochMilli(),
       taskDesc: _descController.text,
       taskTitle: _titleController.text,
-      taskCompartment: _compartmentModel,
+      taskCompartment: _compartmentModel.compartmentId == null? CompartmentModel(compartmentId: 1, compartmentTitle: (Constants.DATABASE_NO_COMPARTMENT_DATA)):_compartmentModel,
     );
-    int d = await DatabaseHelper.db.insertTask(currentModel!);
+    await DatabaseHelper.db.insertTask(currentModel!);
   }
 
   Future _updateTaskModel() async {
@@ -234,8 +267,7 @@ class _TaskAddEditScreenState extends State<TaskAddEditScreen> {
           taskDateTime: Misc.getCurrentEpochMilli(),
           taskCompartment: _compartmentModel);
       await DatabaseHelper.db.updateTask(currentModel!);
-    } else
-      print("ERROR: updateTaskModel"); //@debug @cleanup
+    }
   }
 
   Future _deleteTaskModel() async {

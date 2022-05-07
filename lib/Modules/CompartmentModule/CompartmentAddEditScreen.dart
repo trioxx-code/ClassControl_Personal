@@ -3,8 +3,8 @@
  */
 
 import 'package:classcontrol_personal/Database/DatabaseHelper.dart';
-import 'package:classcontrol_personal/Models/CompartmentModel.dart';
-import 'package:classcontrol_personal/Models/TeacherModel.dart';
+import 'CompartmentModel.dart';
+import '../TeacherModule/TeacherModel.dart';
 import 'package:classcontrol_personal/Util/Constants.dart';
 import 'package:flutter/material.dart';
 

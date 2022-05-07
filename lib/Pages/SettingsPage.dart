@@ -3,8 +3,8 @@
 /*
  * Copyright (c) 2021. ClassControl Personal by trioxx
  */ // ignore_for_file: file_names
-import 'package:classcontrol_personal/Pages/CompartmentPage.dart';
-import 'package:classcontrol_personal/Pages/TeacherPage.dart';
+import '../Modules/CompartmentModule/CompartmentPage.dart';
+import '../Modules/TeacherModule/TeacherPage.dart';
 import 'package:classcontrol_personal/Util/Constants.dart';
 import 'package:classcontrol_personal/util/SharedPreferencesHelper.dart';
 import 'package:classcontrol_personal/util/SideBarDrawer.dart';

@@ -5,15 +5,15 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:classcontrol_personal/Models/CalendarModel.dart';
-import 'package:classcontrol_personal/Models/CompartmentModel.dart';
-import 'package:classcontrol_personal/Models/LearningItemModel.dart';
-import 'package:classcontrol_personal/Models/LearningStackModel.dart';
-import 'package:classcontrol_personal/Models/NoteModel.dart';
-import 'package:classcontrol_personal/Models/PerformanceModel.dart';
-import 'package:classcontrol_personal/Models/TaskModel.dart';
-import 'package:classcontrol_personal/Models/TeacherModel.dart';
-import 'package:classcontrol_personal/Models/TimetableModel.dart';
+import '../Modules/CalendarModule/CalendarModel.dart';
+import '../Modules/CompartmentModule/CompartmentModel.dart';
+import '../Modules/LearningModule/LearningItem/LearningItemModel.dart';
+import '../Modules/LearningModule/LearningStack/LearningStackModel.dart';
+import '../Modules/NoteModule/NoteModel.dart';
+import '../Modules/PerformanceModule/PerformanceModel.dart';
+import '../Modules/TaskModule/TaskModel.dart';
+import '../Modules/TeacherModule/TeacherModel.dart';
+import '../Modules/TimetableModule/TimetableModel.dart';
 import 'package:classcontrol_personal/Util/Constants.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
@@ -140,10 +140,11 @@ class DatabaseHelper {
     if (filterType != null && filterArgs != null) {
       sql += " ORDER BY $_tableNote.$filterArgs $filterType";
     }
+    //print(sql); //@debug
     List<Map> data = await d.rawQuery(sql);
-    data.forEach((element) async {
+    for (var element in data) {
       CompartmentModel? comp =
-          await getCompartmentById(element[noteCompartment]);
+          await getCompartmentById(element[noteCompartment], element[noteId]);
       notes.add(NoteModel(
         id: element[noteId],
         priority: element[notePriority],
@@ -152,7 +153,8 @@ class DatabaseHelper {
         title: element[noteTitle],
         compartmentModel: comp,
       ));
-    });
+    }
+    //print("notesLengDB:" + notes.length.toString()); //@debug
     return notes;
   }
 
@@ -182,8 +184,10 @@ class DatabaseHelper {
 
   Future<int> updateNote(NoteModel note) async {
     final d = await db.database;
-    return await d.update(_tableNote, note.toMap(),
-        where: "$noteId =?", whereArgs: [note.id]);
+    String sql =
+        "UPDATE $_tableNote SET $notePriority = ${note.priority}, $noteNote = '${note.note}', $noteTitle = '${note.title}', $noteCompartment = ${note.compartmentModel!.compartmentId} WHERE $noteId = ${note.id}";
+    return await d.rawUpdate(sql);
+    //return await d.update(_tableNote, note.toMap(), where: "$noteId =?", whereArgs: [note.id]);
   }
 
   Future<List<TimetableModel>> getAllTimetableData() async {
@@ -232,12 +236,17 @@ class DatabaseHelper {
         .delete(_tableTeacher, where: "$teacherId =?", whereArgs: [teacher.id]);
   }
 
+  CompartmentModel getNoDataCompartmentModel() => CompartmentModel(
+      compartmentId: 1,
+      compartmentTitle: Constants.DATABASE_NO_COMPARTMENT_DATA);
+
   Future<List<CompartmentModel>> getAllCompartments() async {
     final d = await db.database;
     List<CompartmentModel> compartments = [];
     List<Map> data = await d.rawQuery("SELECT * FROM $_tableCompartment");
     int j = 0, i = 0;
     data.forEach((element) {
+      //@info: skip the 0-index
       if (element[compartmentId] != 1) {
         ++j;
       } else {
@@ -319,22 +328,26 @@ class DatabaseHelper {
     return allTeachers;
   }
 
-  Future<CompartmentModel?> getCompartmentById(int? id) async {
-    if (id == null) {
+  Future<CompartmentModel?> getCompartmentById(int? compId, int? noteId) async {
+    if (compId == null) {
       return null;
     }
     final d = await db.database;
     final cols = [compartmentId, compartmentTitle];
+    String query = noteId != null
+        ? '($compartmentId = ?) AND ($noteId = ?)'
+        : '($compartmentId = ?)';
     final data = await d.query(
       _tableCompartment,
       columns: cols,
-      where: '$compartmentId = ?',
-      whereArgs: [id],
+      where: query,
+      whereArgs: noteId != null ? [compId, noteId] : [compId],
     );
+    //print(data); //@debug
     if (data.isNotEmpty) {
       return CompartmentModel.fromMap(data.first);
     } else {
-      throw Exception('ID $id not found');
+      throw Exception('ID $compId not found');
     }
   }
 
@@ -342,6 +355,10 @@ class DatabaseHelper {
     final d = await db.database;
     int res = 0;
     res = await d.insert(_tableCompartment, compartment.toMap());
+    print("insertCompartment: " +
+        res.toString() +
+        "|" +
+        compartment.toMap().toString());
     return res;
   }
 
@@ -388,17 +405,19 @@ class DatabaseHelper {
     return appointments;
   }
 
+  //TODO: INNER JOIN von Compartment hinzufügen
   Future<List<TaskModel>> getAllTasks() async {
     final d = await db.database;
     List<TaskModel> tasks = [];
-    List<Map> data = await d.rawQuery("SELECT * FROM $_tableTask");
+    List<Map> data = await d.rawQuery(
+        "SELECT * FROM $_tableTask INNER JOIN $_tableCompartment ON $_tableTask.$taskCompartment = $_tableCompartment.$compartmentId");
     data.forEach((element) {
       tasks.add(TaskModel(
         taskId: element[taskId],
         taskTitle: element[taskTitle],
         taskDesc: element[taskDesc],
         taskDateTime: element[taskDateTime],
-        isChecked: element[taskIsChecked],
+        isChecked: element[taskIsChecked] == 0 ? false : true,
         taskCompartment: CompartmentModel(
           compartmentId: element[compartmentId],
           compartmentTitle: element[compartmentTitle],
@@ -477,24 +496,28 @@ class DatabaseHelper {
         where: "$learningStackId = ?", whereArgs: [learningStackModel.id]);
   }
 
-  Future<int> insertLearningItemModel(String content) async {
+  Future<int> insertLearningItemModel(String content, int? stackId) async {
     final d = await db.database;
-    return await d.insert(_tableLearningItem, {learningItemContent: content});
+    String sql = "INSERT INTO $_tableLearningItem ($learningItemContent, $learningItemStackId) VALUES ('$content', $stackId)";
+    return await d.rawInsert(sql);
+    //return await d.insert(_tableLearningItem, {learningItemContent: content});
   }
 
   Future<int> updateLearningItemModel(
-      LearningItemModel learningStackModel) async {
+      LearningItemModel learningItemModel) async {
     final d = await db.database;
-    return await d.update(_tableLearningStack, learningStackModel.toMap(),
-        where: "$learningStackId = ?", whereArgs: [learningStackModel.id]);
+    String sql = "UPDATE $_tableLearningItem SET $learningItemContent = '${learningItemModel.content}' WHERE $learningItemId = ${learningItemModel.id}";
+    return await d.rawUpdate(sql);
+    //return await d.update(_tableLearningItem, learningItemModel.toMap(), @cleanup
+    //    where: "$learningStackId = ?", whereArgs: [learningItemModel.id]);
   }
 
   //TODO: Evtl. AND dranpacken für stackId
   Future<int> deleteLearningItemModel(
-      LearningItemModel learningStackModel) async {
+      LearningItemModel learningItemModel) async {
     final d = await db.database;
     return await d.delete(_tableLearningItem,
-        where: "$learningItemId = ?", whereArgs: [learningStackModel.id]);
+        where: "$learningItemId = ?", whereArgs: [learningItemModel.id]);
   }
 
   Future<List<LearningItemModel>> getAllLearningItemsByStack(

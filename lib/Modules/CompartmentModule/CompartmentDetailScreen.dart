@@ -3,9 +3,9 @@
  */
 
 import 'package:classcontrol_personal/Database/DatabaseHelper.dart';
-import 'package:classcontrol_personal/Models/CompartmentModel.dart';
-import 'package:classcontrol_personal/Models/TeacherModel.dart';
-import 'package:classcontrol_personal/Screens/CompartmentAddEditScreen.dart';
+import 'CompartmentModel.dart';
+import '../TeacherModule/TeacherModel.dart';
+import 'CompartmentAddEditScreen.dart';
 import 'package:classcontrol_personal/Util/Constants.dart';
 import 'package:classcontrol_personal/Widgets/DynamicTeacherWidget.dart';
 import 'package:flutter/material.dart';
@@ -111,8 +111,8 @@ class _CompartmentDetailScreenState extends State<CompartmentDetailScreen> {
     setState(() {
       isLoading = true;
     });
-    compartmentModel =
-        (await DatabaseHelper.db.getCompartmentById(widget.compartmentId))!;
+    compartmentModel = (await DatabaseHelper.db
+        .getCompartmentById(widget.compartmentId, null))!;
     teachers = await DatabaseHelper.db
         .getAssignedTeachersFromCompartment(compartmentModel);
     setState(() {

@@ -3,10 +3,10 @@
  */
 
 import 'package:classcontrol_personal/Database/DatabaseHelper.dart';
-import 'package:classcontrol_personal/Models/LearningItemModel.dart';
-import 'package:classcontrol_personal/Models/LearningStackModel.dart';
-import 'package:classcontrol_personal/Screens/LearningItemAddEditScreen.dart';
-import 'package:classcontrol_personal/Screens/LearningItemDetailScreen.dart';
+import 'LearningItemModel.dart';
+import '../LearningStack/LearningStackModel.dart';
+import 'LearningItemAddEditScreen.dart';
+import 'LearningItemDetailScreen.dart';
 import 'package:classcontrol_personal/Util/Constants.dart';
 import 'package:classcontrol_personal/Util/SideBarDrawer.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +23,6 @@ class LearningItemPage extends StatefulWidget {
 class _LearningItemPageState extends State<LearningItemPage> {
   bool isLoading = false;
   List<LearningItemModel> items = [];
-  LearningItemModel? item;
 
   @override
   void initState() {
@@ -35,18 +34,30 @@ class _LearningItemPageState extends State<LearningItemPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const SideDrawer(),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () async {
+          await Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => LearningItemAddEditScreen(
+                learningStackModel: widget.learningStackModel),
+          ));
+          await refresh();
+        },
+      ),
       appBar: AppBar(
-        title: const Text(Constants.PT_LEARNING),
+        title: Text(widget.learningStackModel.title),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
-      body: SingleChildScrollView(
-        child: Center(
-            child: isLoading
-                ? const CircularProgressIndicator()
-                : items.isEmpty
-                    ? const Text(Constants.NO_DATA,
-                        style: TextStyle(color: Colors.white, fontSize: 24))
-                    : buildItems()),
-      ),
+      body: Center(
+          child: isLoading
+              ? const CircularProgressIndicator()
+              : items.isEmpty
+                  ? const Text(Constants.NO_DATA,
+                      style: TextStyle(color: Colors.white, fontSize: 24))
+                  : buildItems()),
     );
   }
 
@@ -61,7 +72,7 @@ class _LearningItemPageState extends State<LearningItemPage> {
               ),
               leading: IconButton(
                 icon: const Icon(Icons.edit),
-                onPressed: () => _editItem(),
+                onPressed: () => _editItem(items[index]),
               ),
               onTap: () async {
                 await Navigator.of(context).push(MaterialPageRoute(
@@ -86,7 +97,7 @@ class _LearningItemPageState extends State<LearningItemPage> {
     });
   }
 
-  Future _editItem() async {
+  Future _editItem(LearningItemModel item) async {
     await Navigator.of(context).push(MaterialPageRoute(
       builder: (context) => LearningItemAddEditScreen(
         learningStackModel: widget.learningStackModel,

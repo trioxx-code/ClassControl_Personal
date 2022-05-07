@@ -3,38 +3,35 @@
  */
 
 import 'package:classcontrol_personal/Database/DatabaseHelper.dart';
-import 'package:classcontrol_personal/Models/LearningStackModel.dart';
+import 'TeacherModel.dart';
 import 'package:classcontrol_personal/Util/Constants.dart';
 import 'package:flutter/material.dart';
 
-class LearningStackAddEditScreen extends StatefulWidget {
-  LearningStackModel? learningStackModel;
+class TeacherAddEditScreen extends StatefulWidget {
+  TeacherModel? compartmentModel;
 
-  LearningStackAddEditScreen({Key? key, this.learningStackModel})
-      : super(key: key);
+  TeacherAddEditScreen({Key? key, this.compartmentModel}) : super(key: key);
 
   @override
-  _LearningStackAddEditScreenState createState() =>
-      _LearningStackAddEditScreenState();
+  _TeacherAddEditScreenState createState() => _TeacherAddEditScreenState();
 }
 
-class _LearningStackAddEditScreenState
-    extends State<LearningStackAddEditScreen> {
-  late TextEditingController _learningStackNameController;
-  LearningStackModel? currentModel;
+class _TeacherAddEditScreenState extends State<TeacherAddEditScreen> {
+  late TextEditingController _teacherController;
+  TeacherModel? currentModel;
   late Icon icon;
   bool isAdd = false;
 
   @override
   void initState() {
     super.initState();
-    currentModel = widget.learningStackModel;
+    currentModel = widget.compartmentModel;
     init();
   }
 
   @override
   void dispose() {
-    _learningStackNameController.dispose();
+    _teacherController.dispose();
     super.dispose();
   }
 
@@ -47,7 +44,7 @@ class _LearningStackAddEditScreenState
           !isAdd
               ? IconButton(
                   icon: const Icon(Icons.delete),
-                  onPressed: () async => await _deleteLearningStackModel(),
+                  onPressed: () async => await _deleteTeacherModel(),
                 )
               : Container(),
           const SizedBox(
@@ -55,7 +52,7 @@ class _LearningStackAddEditScreenState
           ),
           IconButton(
             icon: icon,
-            onPressed: () => addOrUpdateLearningStackModel(),
+            onPressed: () => addOrUpdateTeacherModel(),
           )
         ],
       ),
@@ -64,10 +61,10 @@ class _LearningStackAddEditScreenState
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
             child: TextField(
-                controller: _learningStackNameController,
+                controller: _teacherController,
                 style: const TextStyle(fontSize: 16),
                 decoration: InputDecoration(
-                  labelText: "Bezeichnung",
+                  labelText: "Name",
                   floatingLabelAlignment: FloatingLabelAlignment.center,
                   labelStyle:
                       TextStyle(color: Colors.blue.shade50, fontSize: 16),
@@ -92,9 +89,9 @@ class _LearningStackAddEditScreenState
   void init() {
     String name = "";
     if (currentModel != null) {
-      name = currentModel!.title;
+      name = currentModel!.name;
     }
-    _learningStackNameController = TextEditingController(text: name);
+    _teacherController = TextEditingController(text: name);
     if (getTitle() == Constants.SCREEN_ADD) {
       isAdd = true;
       icon = const Icon(Icons.check);
@@ -109,35 +106,33 @@ class _LearningStackAddEditScreenState
     return res;
   }
 
-  void addOrUpdateLearningStackModel() {
+  void addOrUpdateTeacherModel() {
     if (isAdd) {
-      _insertLearningStackModel();
+      _insertTeacherModel();
     } else {
-      _updateLearningStackModel();
+      _updateTeacherModel();
     }
     Navigator.of(context).pop();
   }
 
-  Future _insertLearningStackModel() async {
-    currentModel ??= LearningStackModel(
-      title: _learningStackNameController.text,
+  Future _insertTeacherModel() async {
+    currentModel ??= TeacherModel(
+      name: _teacherController.text,
     );
-    int d =
-        await DatabaseHelper.db.insertLearningStackModel(currentModel!.title);
+    int d = await DatabaseHelper.db.insertTeacher(currentModel!.name);
   }
 
-  Future _updateLearningStackModel() async {
+  Future _updateTeacherModel() async {
     if (currentModel != null) {
       int? id = currentModel!.id;
-      currentModel =
-          LearningStackModel(id: id, title: _learningStackNameController.text);
-      await DatabaseHelper.db.updateLearningStackModel(currentModel!);
+      currentModel = TeacherModel(id: id, name: _teacherController.text);
+      await DatabaseHelper.db.updateTeacher(currentModel!);
     } else
-      print("ERROR: updateLearningStackModel"); //@debug @cleanup
+      print("ERROR: updateTeacherModel"); //@debug @cleanup
   }
 
-  Future _deleteLearningStackModel() async {
-    int d = await DatabaseHelper.db.deleteLearningStackModel(currentModel!);
+  Future _deleteTeacherModel() async {
+    int d = await DatabaseHelper.db.deleteTeacher(currentModel!);
     Navigator.of(context).pop();
   }
 }

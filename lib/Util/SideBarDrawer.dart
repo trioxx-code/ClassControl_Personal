@@ -1,14 +1,14 @@
 /*
  * Copyright (c) 2021. ClassControl Personal by trioxx
  */ // ignore_for_file: file_names
-import 'package:classcontrol_personal/Pages/CalendarPage.dart';
-import 'package:classcontrol_personal/Pages/DashboardPage.dart';
-import 'package:classcontrol_personal/Pages/LearningPage.dart';
-import 'package:classcontrol_personal/Pages/NotePage.dart';
-import 'package:classcontrol_personal/Pages/PerformancePage.dart';
+import 'package:classcontrol_personal/Modules/LearningModule/LearningPage.dart';
+import 'package:classcontrol_personal/Modules/NoteModule/NotePage.dart';
+import 'package:classcontrol_personal/Modules/PerformanceModule/PerformancePage.dart';
+import 'package:classcontrol_personal/Modules/TaskModule/TaskPage.dart';
+import 'package:classcontrol_personal/Modules/TimetableModule/TimetablePage.dart';
+import '../Modules/CalendarModule/CalendarPage.dart';
+import '../Pages/DashboardPage.dart';
 import 'package:classcontrol_personal/Pages/SettingsPage.dart';
-import 'package:classcontrol_personal/Pages/TaskPage.dart';
-import 'package:classcontrol_personal/Pages/TimetablePage.dart';
 import 'package:classcontrol_personal/Pages/WebPage.dart';
 import 'package:classcontrol_personal/util/Constants.dart';
 import 'package:flutter/material.dart';

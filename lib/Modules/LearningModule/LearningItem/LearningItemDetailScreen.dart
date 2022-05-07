@@ -3,10 +3,9 @@
  */
 
 import 'package:classcontrol_personal/Database/DatabaseHelper.dart';
-import 'package:classcontrol_personal/Models/LearningItemModel.dart';
-import 'package:classcontrol_personal/Models/LearningStackModel.dart';
-import 'package:classcontrol_personal/Screens/LearningItemAddEditScreen.dart';
-import 'package:classcontrol_personal/Util/Constants.dart';
+import 'LearningItemModel.dart';
+import '../LearningStack/LearningStackModel.dart';
+import 'LearningItemAddEditScreen.dart';
 import 'package:flutter/material.dart';
 
 class LearningItemDetailScreen extends StatefulWidget {
@@ -32,7 +31,7 @@ class _LearningStackItemPageState extends State<LearningItemDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(Constants.PT_TEACHER),
+        title: Text(widget.learningStackModel.title),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete),
@@ -53,6 +52,7 @@ class _LearningStackItemPageState extends State<LearningItemDetailScreen> {
                   learningStackModel: widget.learningStackModel,
                 ),
               ));
+              Navigator.of(context).pop();
             },
           ),
         ],

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2021. ClassControl Personal by trioxx
  */ // ignore_for_file: file_names
-import 'package:classcontrol_personal/Pages/DashboardPage.dart';
+import 'Pages/DashboardPage.dart';
 import 'package:classcontrol_personal/util/Constants.dart';
 import 'package:classcontrol_personal/util/SharedPreferencesHelper.dart';
 import 'package:flutter/material.dart';

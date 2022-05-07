@@ -1,10 +1,11 @@
 /*
- * Copyright (c) 2021. ClassControl Personal by trioxx
+ * Copyright (c) 2022. ClassControl Personal by trioxx
  */
 
 import 'package:classcontrol_personal/Database/DatabaseHelper.dart';
-import 'package:classcontrol_personal/Models/CompartmentModel.dart';
-import 'package:classcontrol_personal/Models/NoteModel.dart';
+import '../CompartmentModule/CompartmentModel.dart';
+import 'NoteModel.dart';
+import 'NotePage.dart';
 import 'package:classcontrol_personal/Util/Misc.dart';
 import 'package:classcontrol_personal/util/Constants.dart';
 import 'package:flutter/material.dart';
@@ -36,11 +37,12 @@ class _NoteAddEditScreenState extends State<NoteAddEditScreen> {
   @override
   void initState() {
     super.initState();
-    if(getTitle() == Constants.SCREEN_ADD) {
+    if (getTitle() == Constants.SCREEN_ADD) {
       icon = const Icon(Icons.check);
       isAdd = true;
     } else {
       icon = const Icon(Icons.edit);
+      isAdd = false;
     }
     currentModel = widget.model;
     initControllersAndValues();
@@ -133,7 +135,7 @@ class _NoteAddEditScreenState extends State<NoteAddEditScreen> {
               },
               style: ButtonStyle(
                 backgroundColor:
-                MaterialStateProperty.all(Colors.grey.shade900),
+                    MaterialStateProperty.all(Colors.grey.shade900),
               ),
             ),
             Padding(
@@ -182,12 +184,14 @@ class _NoteAddEditScreenState extends State<NoteAddEditScreen> {
 
   void addOrUpdateNoteModel() {
     if (isAdd) {
-      print("ADD");
       _saveNoteModel();
     } else {
       _updateNoteModel();
     }
-    Navigator.of(context).pop();
+    //Navigator.of(context).pop();
+    Navigator.of(context).pushReplacement(MaterialPageRoute(
+      builder: (context) => const NotePage(),
+    ));
   }
 
   Future _saveNoteModel() async {
@@ -199,7 +203,6 @@ class _NoteAddEditScreenState extends State<NoteAddEditScreen> {
         date: Misc.getCurrentEpochMilli(),
         compartmentModel: compartmentModel);
     int d = await DatabaseHelper.db.insertNote(currentModel!);
-    print("inserted:$d");
   }
 
   Future _updateNoteModel() async {
@@ -221,7 +224,7 @@ class _NoteAddEditScreenState extends State<NoteAddEditScreen> {
 
   String getTitle() {
     String res =
-        ((currentModel == null) ? Constants.SCREEN_ADD : Constants.SCREEN_EDIT);
+        ((widget.model == null) ? Constants.SCREEN_ADD : Constants.SCREEN_EDIT);
     return res;
   }
 

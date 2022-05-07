@@ -3,8 +3,8 @@
  */
 
 import 'package:classcontrol_personal/Database/DatabaseHelper.dart';
-import 'package:classcontrol_personal/Models/CompartmentModel.dart';
-import 'package:classcontrol_personal/Models/TeacherModel.dart';
+import '../Modules/CompartmentModule/CompartmentModel.dart';
+import '../Modules/TeacherModule/TeacherModel.dart';
 import 'package:flutter/material.dart';
 
 class DynamicTeacherWidget extends StatefulWidget {

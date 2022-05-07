@@ -3,9 +3,9 @@
  */
 
 import 'package:classcontrol_personal/Database/DatabaseHelper.dart';
-import 'package:classcontrol_personal/Models/LearningStackModel.dart';
-import 'package:classcontrol_personal/Pages/LearningItemPage.dart';
-import 'package:classcontrol_personal/Screens/LearningStackAddEditScreen.dart';
+import 'LearningStackModel.dart';
+import '../LearningItem/LearningItemPage.dart';
+import 'LearningStackAddEditScreen.dart';
 import 'package:classcontrol_personal/Util/Constants.dart';
 import 'package:flutter/material.dart';
 
@@ -25,7 +25,7 @@ class _LearningStackDetailScreenState extends State<LearningStackDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(Constants.PT_TEACHER),
+        title: const Text(Constants.PT_LEARNING),
         actions: [
           IconButton(
             icon: const Icon(Icons.delete),
